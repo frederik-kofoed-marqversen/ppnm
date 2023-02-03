@@ -1,0 +1,2 @@
+sqrt(2) = 1.4142135
+sqrt2 * sqrt2 = 1.9999999 (should be equal to 2)
