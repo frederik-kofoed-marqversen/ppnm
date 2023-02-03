@@ -3,3 +3,7 @@ Out.txt: main
 
 main: main.rs
 	rustc main.rs
+
+.PHONEY: clean
+clean:
+	rm -f Out.txt  main

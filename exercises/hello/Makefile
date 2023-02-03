@@ -1,9 +1,9 @@
-Out.txt: hello
-	./hello > Out.txt
+Out.txt: main
+	./main > Out.txt
 
-hello: hello.rs
-	rustc hello.rs
+main: main.rs
+	rustc main.rs
 
-.PHONEY: clean
+.PHONEY: clean test-shell
 clean:
-	rm -f Out.txt  hello
+	rm -f Out.txt  main
