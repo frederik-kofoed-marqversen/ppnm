@@ -1,24 +1,26 @@
 fn main(){
-/*
-    // T ASK 1
-    println!("Task 1");
+    // TASK 1
+    println!("  Task 1");
+    // In rust one would use .wrapping_add() instead of + to 
+    // make it clear that wrapping is the intended behaviour
+
     let mut i : u32 = 1;
-    while i + 1 > i {i += 1;}
+    while i.wrapping_add(1) > i {i += 1;}
     println!("My max un-signed int = {i}");
     println!("std::u32::MAX = {}", u32::MAX);
-    
+
     let mut i : i32 = 1;
-    while i + 1 > i {i += 1;}
-    println!("My max signed int = {i}");
+    while i.wrapping_add(1) > i {i += 1;}
+    println!("\nMy max signed int = {i}");
     println!("std::i32::MAX = {}", i32::MAX);
 
     let mut i : i32 = 1;
-    while i - 1 < i {i -= 1;}
-    println!("My min int = {i}");
+    while i.wrapping_sub(1) < i {i -= 1;}
+    println!("\nMy min signed int = {i}");
     println!("std::i32::MIN = {}", i32::MIN);
-*/
+
     // TASK 2
-    println!("\n Task 2");
+    println!("\n    Task 2");
     let mut x : f32 = 1.0;
     while 1.0 + x != 1.0 {x /= 2.0;};
     x *= 2.0;
@@ -32,7 +34,7 @@ fn main(){
     println!("std::f64::EPSILON = {}", f64::EPSILON);
  
     // TASK 3
-    println!("\n Task 3");
+    println!("\n    Task 3");
     let n = 1e6 as u32;
     let epsilon = f64::EPSILON;
     let tiny = epsilon / 2.0;
@@ -44,11 +46,12 @@ fn main(){
         sum_b += tiny;
     }
     sum_b += 1.0;
-    println!("sum_a-1 = {} should be {}", sum_a-1.0, (n as f64)*tiny);
-    println!("sum_b-1 = {} should be {}", sum_b-1.0, (n as f64)*tiny);
+    println!("sum_a-1 = {}", sum_a-1.0);
+    println!("sum_b-1 = {}", sum_b-1.0);
+    println!("Both should be = {}", (n as f64)*tiny);
 
     // TASK 4
-    println!("\n Task 4");
+    println!("\n    Task 4");
     let d1 = 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1 + 0.1;
     let d2 = 8.0 * 0.1;
     println!("d1={d1}");
