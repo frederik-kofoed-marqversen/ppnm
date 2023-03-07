@@ -1,10 +1,10 @@
-mod matrix_f64;
 mod iterator;
 mod matrix_add;
 mod matrix_multiply;
 mod scalar_multiply;
+mod matrix_f64;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Matrix<T> {
     data: Vec<T>,
     pub num_cols: usize,
@@ -28,7 +28,7 @@ impl<T: Copy> Matrix<T> {
         }
     }
 
-    fn new_from_data(data: Vec<T>, num_rows: usize, num_cols: usize) -> Self {
+    pub fn from_data(data: Vec<T>, num_rows: usize, num_cols: usize) -> Self {
         if data.len() != num_cols * num_rows {panic!("Non-compatible dimensions!");}
         Self {
             data: data, 
@@ -52,7 +52,7 @@ impl<T: Copy> Matrix<T> {
                 data.push(self.get(i, j));
             }
         }
-        return Self::new_from_data(data, self.num_cols, self.num_rows);
+        return Self::from_data(data, self.num_cols, self.num_rows);
     }
 }
 

@@ -3,12 +3,12 @@ use super::Matrix;
 impl Matrix<f64> {
     pub fn zeros(num_rows: usize, num_cols: usize) -> Self {
         let data: Vec<f64> = vec![0.0; num_rows * num_cols];
-        Self::new_from_data(data, num_rows, num_cols)
+        Self::from_data(data, num_rows, num_cols)
     }
 
     pub fn ones(num_rows: usize, num_cols: usize) -> Self {
         let data: Vec<f64> = vec![1.0; num_rows * num_cols];
-        Self::new_from_data(data, num_rows, num_cols)
+        Self::from_data(data, num_rows, num_cols)
     }
 
     pub fn idty(dim: usize) -> Self {
