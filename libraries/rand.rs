@@ -1,3 +1,5 @@
+// Hashing functions taken from the fastrand crate
+
 use std::cell::Cell;
 
 #[derive(Debug)]
