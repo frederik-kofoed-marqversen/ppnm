@@ -1,7 +1,7 @@
+mod constructors;
 mod matrix_add;
 mod matrix_multiply;
 mod scalar_multiply;
-mod matrix_f64;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Matrix<T> {

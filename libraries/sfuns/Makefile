@@ -1,4 +1,4 @@
-OUT_DIR=target
+OUT_DIR = target
 lib_path = src/lib.rs
 
 name = $(shell basename $(CURDIR))
@@ -8,10 +8,10 @@ test_target = $(OUT_DIR)/$(name).test
 
 lib: $(rlib_target)
 
-test: $(test_target)
-	rustc $(lib_path) --test -o $<
-	./$<
-	rm $<
+test:
+	rustc $(lib_path) --test -o $(test_target)
+	./$(test_target)
+	rm $(test_target)
 
 $(rlib_target): $(library_files)
 	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(OUT_DIR)
