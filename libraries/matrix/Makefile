@@ -1,20 +1,21 @@
-name = $(shell basename $(CURDIR))
+OUT_DIR=target
 lib_path = src/lib.rs
-target_folder = ../target
-library_files := $(wildcard src/*.rs)
 
-lib: $(target_folder)/lib$(name).rlib
+name = $(shell basename $(CURDIR))
+library_files := $(shell find src -name '*.rs')
+rlib_target = $(OUT_DIR)/lib$(name).rlib
+test_target = $(OUT_DIR)/$(name).test
 
-test: $(target_folder)/$(name).test
+lib: $(rlib_target)
+
+test: $(test_target)
+	rustc $(lib_path) --test -o $<
 	./$<
 	rm $<
 
-$(target_folder)/lib$(name).rlib: $(library_files)
-	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(target_folder)
-
-$(target_folder)/$(name).test: $(library_files)
-	rustc $(lib_path) --test -o $@
+$(rlib_target): $(library_files)
+	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(OUT_DIR)
 
 .PHONEY: clean
 clean:
-	rm $(target_folder)/*$(name)*
+	rm target/*
