@@ -10,7 +10,7 @@ macro_rules! matrix_add {
             fn add(self, other: $RHS) -> Self::Output {
                 let mut data: Vec<$T> = Vec::with_capacity(self.num_rows * self.num_cols);
                 for (a, b) in zip(self.iter(), other.iter()) {
-                    data.push(*a.0 + *b.0);
+                    data.push(*a + *b);
                 }
                 return Matrix::from_data(data, self.num_rows, self.num_cols);
             }
@@ -31,7 +31,7 @@ macro_rules! matrix_subtract {
             fn sub(self, other: $RHS) -> Self::Output {
                 let mut data: Vec<$T> = Vec::with_capacity(self.num_rows * self.num_cols);
                 for (a, b) in zip(self.iter(), other.iter()) {
-                    data.push(*a.0 - *b.0);
+                    data.push(*a - *b);
                 }
                 return Matrix::from_data(data, self.num_rows, self.num_cols);
             }
@@ -50,7 +50,7 @@ macro_rules! matrix_negate {
             type Output = Matrix<$T>;
             fn neg(self) -> Self::Output {
                 let mut data: Vec<$T> = Vec::with_capacity(self.num_rows * self.num_cols);
-                for (scalar, _, _) in self.iter() {
+                for scalar in self.iter() {
                     data.push(-*scalar);
                 }
                 return Matrix::from_data(data, self.num_rows, self.num_cols);

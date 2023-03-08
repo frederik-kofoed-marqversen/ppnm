@@ -22,6 +22,6 @@ impl Matrix<f64> {
     }
 
     pub fn norm(&self) -> f64 {
-        f64::sqrt(self.iter().map(|x| x.0*x.0).sum())
+        f64::sqrt(self.iter().map(|x| x*x).sum())
     }
 }

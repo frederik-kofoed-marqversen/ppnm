@@ -7,7 +7,7 @@ macro_rules! matrix_multiply_scalar_right {
             type Output = Matrix<$T>;
             fn mul(self, scalar: $T) -> Matrix<$T> {
                 let mut data: Vec<$T> = Vec::with_capacity(self.num_rows * self.num_cols);
-                for element in self.data.iter() {
+                for element in self.iter() {
                     data.push(scalar * *element);
                 }
                 return Matrix::from_data(data, self.num_rows, self.num_cols);

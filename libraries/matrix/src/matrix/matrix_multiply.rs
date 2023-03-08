@@ -37,10 +37,13 @@ macro_rules! matrix_multiply {
 }
 matrix_multiply!(&Matrix<T>, &Matrix<T>, T);
 matrix_multiply!(Matrix<T>, Matrix<T>, T);
+matrix_multiply!(&mut Matrix<T>, &mut Matrix<T>, T);
 matrix_multiply!(&Matrix<T>, Matrix<T>, T);
 matrix_multiply!(Matrix<T>, &Matrix<T>, T);
-
-
+matrix_multiply!(Matrix<T>, &mut Matrix<T>, T);
+matrix_multiply!(&mut Matrix<T>, Matrix<T>, T);
+matrix_multiply!(&Matrix<T>, &mut Matrix<T>, T);
+matrix_multiply!(&mut Matrix<T>, &Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {

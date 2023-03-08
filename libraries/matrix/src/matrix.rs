@@ -1,4 +1,3 @@
-mod iterator;
 mod matrix_add;
 mod matrix_multiply;
 mod scalar_multiply;
@@ -41,8 +40,12 @@ impl<T: Copy> Matrix<T> {
         self.data[self.num_rows * col_index + row_index]
     }
 
-    pub fn iter<'a>(&'a self) -> iterator::MatrixIterator<'a, T> {
-        iterator::MatrixIterator::new(&self.data, self.num_rows, self.num_cols)
+    pub fn iter(&self) -> impl Iterator<Item=&T>{
+        self.data.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut T> {
+        self.data.iter_mut()
     }
 
     pub fn transpose(&self) -> Self {
@@ -53,6 +56,21 @@ impl<T: Copy> Matrix<T> {
             }
         }
         return Self::from_data(data, self.num_cols, self.num_rows);
+    }
+}
+
+use std::ops::{Index, IndexMut};
+impl<T> Index<usize> for Matrix<T> {
+    type Output = [T];
+    
+    fn index(&self, col_index: usize) -> &[T] {
+        &self.data[col_index * self.num_rows..(col_index + 1) * self.num_rows]
+    }
+}
+
+impl<T> IndexMut<usize> for Matrix<T> {
+    fn index_mut(&mut self, col_index: usize) -> &mut [T] {
+        &mut self.data[col_index * self.num_rows..(col_index + 1) * self.num_rows]
     }
 }
 
@@ -69,3 +87,36 @@ impl<T: Copy> Matrix<T> {
         write!(f, "]")
     }
 } */
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_index() {
+        let mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
+        assert_eq!(
+            mat[1],
+            [3, 4]
+        );
+    }
+
+    /* #[test]
+    fn test_index() {
+        let mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
+        assert_eq!(
+            mat[1..4],
+            [2, 3, 4]
+        );
+    }
+
+    #[test]
+    fn test_index_mut() {
+        let mut mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
+        mat[1..4] = [0; 3];
+        assert_eq!(
+            mat[..],
+            [1, 0, 0, 0, 5, 6]
+        );
+    } */
+}
