@@ -7,7 +7,6 @@ lib: $(target_folder)/lib$(name).rlib
 
 test: $(target_folder)/$(name).test
 	./$<
-	rm $<
 
 $(target_folder)/lib$(name).rlib: $(library_files)
 	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(target_folder)

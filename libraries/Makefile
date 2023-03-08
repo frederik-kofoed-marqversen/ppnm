@@ -1,14 +1,14 @@
-libraries = matrix rand sfuns
-target_pattern = target/lib%.rlib
-targets := $(libraries:%=$(target_pattern))
+libraries = matrix sfuns rand complex
 
 all: $(libraries)
 
-$(libraries) : % : $(target_pattern)
+.PHONY: $(libraries)
+$(libraries): | target
+	make -C $@ lib
 
-$(target_pattern) :: %.rs
-	rustc $< --crate-type=lib -o $@
+target:
+	mkdir target
 
-.PHONEY: clean
+.PHONY: clean
 clean:
 	rm target/*
