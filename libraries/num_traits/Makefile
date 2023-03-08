@@ -4,17 +4,11 @@ lib_path = src/lib.rs
 name = $(shell basename $(CURDIR))
 library_files := $(shell find src -name '*.rs')
 rlib_target = $(OUT_DIR)/lib$(name).rlib
-test_target = $(OUT_DIR)/$(name).test
 
 lib: $(rlib_target)
 
-test: $(test_target)
-	rustc $(lib_path) --test -o $<
-	./$<
-	rm $<
-
 $(rlib_target): $(library_files)
-	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(OUT_DIR)
+	rustc --crate-name num_traits $(lib_path) --crate-type lib --cfg 'feature="std"' --out-dir $(OUT_DIR)
 
 .PHONY: clean
 clean:

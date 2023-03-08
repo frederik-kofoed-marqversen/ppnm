@@ -1,2 +1,2 @@
-pub mod matrix;
+mod matrix;
 pub use matrix::Matrix;

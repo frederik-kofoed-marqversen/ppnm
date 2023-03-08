@@ -91,5 +91,4 @@ fn main() {
         *elem *= factor
     } 
     for i in 0..num_points {h[i][i] += -1.0/r[i];}
-    dbg!(h);
 }

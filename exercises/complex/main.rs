@@ -1,4 +1,5 @@
 extern crate num_traits;
+extern crate num_complex;
 use num_complex::Complex;
 const I: Complex<f64> = Complex::<f64>::new(0.0, 1.0);
 const ONE: Complex<f64> = Complex::<f64>::new(1.0, 0.0);
