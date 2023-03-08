@@ -1,0 +1,7 @@
+Generated random 15 by 15 matrix A
+Perfomed cyclic Jacobi eigenvalue decomposition on A
+V^TV = I: true
+VV^T = I: true
+V D V^T = A: true
+V^T A V = D: true
+
