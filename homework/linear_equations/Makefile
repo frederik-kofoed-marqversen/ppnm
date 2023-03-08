@@ -11,4 +11,3 @@ main.bin: main.rs
 .PHONEY: clean
 clean:
 	rm -f Out.txt  main.bin
-	$(MAKE) -C $(library_path) clean > /dev/null
