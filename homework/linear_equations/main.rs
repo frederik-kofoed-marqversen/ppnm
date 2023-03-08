@@ -6,78 +6,73 @@ use matrix::Matrix;
 use rand::Rng;
 use sfuns::are_close;
 
-fn qr_gs_decomp(mat: &mut Matrix, r: &mut Matrix) {
+use std::iter::zip;
+
+fn qr_gs_decomp(mat: &mut Matrix<f64>, r: &mut Matrix<f64>) {
     let m = mat.num_cols;
     for i in 0..m {
-        let ai = &mat.data[i];
+        let ai = &mat[i];
         let norm = f64::sqrt(ai.iter().map(|x| x*x).sum());
-        r.data[i][i] = norm;
+        r[i][i] = norm;
         let qi: Vec<f64> = ai.iter().map(|x| x/norm).collect();
-        mat.data[i] = qi.clone();
+        mat[i].clone_from_slice(&qi[..]);
         for j in i+1..m {
-            let aj = &mat.data[j];
+            let aj = &mat[j];
             let inner_prod: f64 = qi.iter()
                                     .zip(aj.iter())
                                     .map(|x| x.0 * x.1)
                                     .sum();
-            r.data[j][i] = inner_prod;
-            mat.data[j] = aj.iter().zip(qi.iter()).map(|(a, q)| a - inner_prod * q).collect();
+            r[j][i] = inner_prod;
+            let new_col: Vec<f64> = zip(aj.iter(), qi.iter()).map(|(a, q)| a - inner_prod * q).collect();
+            mat[j].clone_from_slice(&new_col[..]);
         }
     }
 }
 
-fn back_substitution(a: &Matrix, b: &mut Matrix) {
+fn back_substitution(a: &Matrix<f64>, b: &mut Matrix<f64>) {
     for i in (0..b.num_rows).rev() {
         let mut sum = 0.0;
         for j in i+1..b.num_rows {
-            sum += a.data[j][i] * b.data[0][j];
+            sum += a[j][i] * b[0][j];
         }
-        b.data[0][i] = (b.data[0][i] - sum) / a.data[i][i];
+        b[0][i] = (b[0][i] - sum) / a[i][i];
     }
 }
 
-fn qr_gs_solve(q: &Matrix, r: &Matrix, b: &mut Matrix) {
-    b.data = (&q.transpose() * &b).data;
+fn qr_gs_solve(q: &Matrix<f64>, r: &Matrix<f64>, b: &mut Matrix<f64>) {
+    let temp = b.clone();
+    b[0].clone_from_slice(&(q.transpose() * temp)[0]);
     back_substitution(r, b);
 }
 
-fn qr_gs_inverse(q: &Matrix, r: &Matrix) -> Matrix {
+fn qr_gs_inverse(q: &Matrix<f64>, r: &Matrix<f64>) -> Matrix<f64> {
     let n = q.num_cols;
     let mut result = Matrix::zeros(n, n);
     for i in 0..n {
         let mut ei = Matrix::new(vec![vec![0.0; n]]);
-        ei.data[0][i] = 1.0;
+        ei[0][i] = 1.0;
         qr_gs_solve(q, r, &mut ei);
-        result.data[i] = ei.data[0].clone();
+        result[i].clone_from_slice(&ei[0]);
     }
     return result;
 }
 
-fn random_vec(len: usize, rng: &Rng) -> Vec<f64> {
-    let mut result = vec![];
-    result.resize_with(len, || rng.f64() * 10.0);
-    return result;
-}
-fn random_matrix(rows: usize, cols: usize, rng: &Rng) -> Matrix {
-    let mut data = vec![];
-    data.resize_with(cols, || random_vec(rows, rng));
-    return Matrix::new(data)
+fn random_matrix(rows: usize, cols: usize, rng: &Rng) -> Matrix<f64> {
+    return Matrix::from_data((0..rows*cols).map(|_| rng.f64()).collect(), rows, cols)
 }
 
-fn is_upper_tiangular(mat: &Matrix) -> bool {
-    for (i, col) in mat.data.iter().enumerate() {
-        for elem in &col[i+1..] {
-            if !are_close(*elem, 0.0) {return false};
+fn is_upper_tiangular(mat: &Matrix<f64>) -> bool {
+    for i in 1..mat.num_rows {
+        for j in 0..i {
+            if !are_close(mat.get(i, j), 0.0) {return false};
         }
     }
     return true;
 }
 
-fn mat_are_close(a: &Matrix, b: &Matrix) -> bool {
-    for (a_col, b_col) in a.data.iter().zip(b.data.iter()) {
-        for (a_elem, b_elem) in a_col.iter().zip(b_col.iter()) {
-            if !are_close(*a_elem, *b_elem) {return false};
-        }
+fn mat_are_close(mat1: &Matrix<f64>, mat2: &Matrix<f64>) -> bool {
+    for (a, b) in zip(mat1.iter(), mat2.iter()) {
+        if !are_close(*a, *b) {return false};
     }
     return true;
 }
