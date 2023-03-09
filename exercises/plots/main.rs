@@ -2,7 +2,7 @@ extern crate sfuns;
 use std::io::Write;
 
 fn main() -> std::io::Result<()> {
-    let mut file = std::fs::File::create("target/factorials.data")?;
+    let mut file = std::fs::File::create("out/factorials.data")?;
     let mut factorial = 1;
     file.write_all(format!("0  {factorial}\n").as_bytes())?;
     for n in 1..5 {
@@ -10,7 +10,7 @@ fn main() -> std::io::Result<()> {
         file.write_all(format!("{n}  {factorial}\n").as_bytes())?;
     }
 
-    let mut file = std::fs::File::create("target/gamma.data")?;
+    let mut file = std::fs::File::create("out/gamma.data")?;
     let num_point = 500.0;
     let range = (-5.0, 5.0);
     for n in 0..=num_point as i32 {
@@ -19,7 +19,7 @@ fn main() -> std::io::Result<()> {
         file.write_all(format!("{x}  {gamma}\n").as_bytes())?;
     }
 
-    let mut file = std::fs::File::create("target/lngamma.data")?;
+    let mut file = std::fs::File::create("out/lngamma.data")?;
     let num_point = 500.0;
     let range = (0.0, 20.0);
     for n in 0..num_point as i32 {
