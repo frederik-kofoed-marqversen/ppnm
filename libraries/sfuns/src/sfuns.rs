@@ -31,6 +31,6 @@ pub fn are_close(a: f64, b: f64) -> bool {
     let acc = 1e-9;
     let eps = 1e-9;
     if f64::abs(a - b) < acc {return true}
-    if f64::abs(a - b) < (a.abs() + b.abs()) * eps {return true}
+    if f64::abs(a - b) < f64::max(a.abs(), b.abs()) * eps {return true}
     return false;
 }

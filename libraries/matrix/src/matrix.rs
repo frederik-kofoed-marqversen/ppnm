@@ -57,6 +57,19 @@ impl<T: Copy> Matrix<T> {
         }
         return Self::from_data(data, self.num_cols, self.num_rows);
     }
+
+    pub fn col(&self, j: usize) -> Self {
+        let data = self.data[j * self.num_rows..(j + 1) * self.num_rows].to_vec();
+        Self::from_data(data, self.num_rows, 1)
+    }
+
+    pub fn row(&self, i: usize) -> Self {
+        let mut data = Vec::<T>::with_capacity(self.num_cols);
+        for j in 0..self.num_cols {
+            data.push(self.data[j * self.num_rows + i]);
+        }
+        Self::from_data(data, self.num_cols, 1)
+    }
 }
 
 use std::ops::{Index, IndexMut};
@@ -74,19 +87,22 @@ impl<T> IndexMut<usize> for Matrix<T> {
     }
 }
 
-/* impl<T: Copy + std::fmt::Display> std::fmt::Display for Matrix<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(f, "[\n")?;
-        for i in 0..self.num_rows {
-            write!(f, " [")?;
-            for j in 0..self.num_cols {
-                write!(f, "{},", self.get(i, j))?;
+use std::fmt;
+impl<T: fmt::Display> fmt::Display for Matrix<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut out = String::from("[\n");
+        for row in 0..self.num_rows {
+            let mut row_str = String::new();
+            for col in 0..self.num_cols {
+                row_str.push_str(&format!("{:+.3} ", self[col][row]));
             }
-            write!(f, "]\n")?;
+            out.push_str(&format!("[{row_str}]\n"));
         }
-        write!(f, "]")
+        out.push(']');
+        write!(f, "{out}")
     }
-} */
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -101,22 +117,21 @@ mod tests {
         );
     }
 
-    /* #[test]
-    fn test_index() {
+    #[test]
+    fn test_col() {
         let mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
         assert_eq!(
-            mat[1..4],
-            [2, 3, 4]
+            mat.col(1),
+            Matrix::from_data(vec![3, 4], 2, 1)
         );
     }
 
     #[test]
-    fn test_index_mut() {
-        let mut mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
-        mat[1..4] = [0; 3];
+    fn test_row() {
+        let mat = Matrix::from_data(vec![1, 2, 3, 4, 5, 6], 2, 3);
         assert_eq!(
-            mat[..],
-            [1, 0, 0, 0, 5, 6]
+            mat.row(1),
+            Matrix::from_data(vec![2, 4, 6], 3, 1)
         );
-    } */
+    }
 }
