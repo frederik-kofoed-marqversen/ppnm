@@ -1,0 +1,38 @@
+Generated random 5 by 3 matrix A
+[
+[+1.405 +4.935 +5.260 ]
+[+5.589 +5.577 +8.763 ]
+[+9.069 +4.510 +6.782 ]
+[+7.191 +5.449 +9.164 ]
+[+3.785 +5.530 +9.769 ]
+]
+
+Perfomed QR factorisation on A
+R is upper triangular?: true
+Q^TQ = I: true
+QR = A: true
+
+Generated random 5 by 5 matrix A
+[
+[+1.512 +5.325 +5.720 +6.559 +0.837 ]
+[+5.278 +2.060 +5.385 +6.589 +5.327 ]
+[+2.470 +3.836 +8.149 +9.709 +7.556 ]
+[+6.551 +0.676 +2.284 +5.977 +0.963 ]
+[+9.183 +0.250 +3.791 +6.197 +7.605 ]
+]
+
+and 5-vector b
+[
+[+0.798 ]
+[+0.841 ]
+[+2.899 ]
+[+3.848 ]
+[+4.483 ]
+]
+
+Perfomed QR factorisation on A
+Solved Rx = Q^Tb for x by back-substitution
+QRx = b: true
+
+Computed matrix inverse of A from above
+A^(-1)A = I: true

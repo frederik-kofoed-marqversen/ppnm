@@ -78,29 +78,57 @@ fn mat_are_close(mat1: &Matrix<f64>, mat2: &Matrix<f64>) -> bool {
 }
 
 fn main() {
+    let mut size: usize = 0;
+    let mut test: bool = false;
+
+    let args: Vec<String> = std::env::args().collect();
+    for arg in &args[1..] {  // ignore first argument since this will always be ./main.bin
+        let words: Vec<&str> = arg.split(":").collect();
+        match words[0] {
+            "-size" => size = words[1].parse::<usize>().unwrap(),
+            "-test" => test = true,
+            _ => panic!("Command '{}' not found.", words[0]),
+        }
+    }
+    if test {test_functions(); return}
+    if size == 0 {panic!("No size given. Use: -size:<u32>!")};
+    solve(size);
+}
+
+fn solve(size: usize) {
+    let rng = Rng::new(2347);
+    let mut a = random_matrix(size, size, &rng);
+    let mut r = Matrix::zeros(size, size);
+    qr_gs_decomp(&mut a, &mut r);
+}
+
+fn test_functions() {
     let rng = Rng::new(2347);
 
     let (n, m) = (5, 3);
-    let mut a = random_matrix(n, m, &rng);
+    let mut a = random_matrix(n, m, &rng) * 10.0;
     let mut r = Matrix::zeros(m, m);
     let a_copy = a.clone();
     qr_gs_decomp(&mut a, &mut r);
 
     println!("Generated random {n} by {m} matrix A");
+    println!("{a_copy}\n");
     println!("Perfomed QR factorisation on A");
     println!("R is upper triangular?: {}", is_upper_tiangular(&r));
     println!("Q^TQ = I: {}", mat_are_close(&(&a.transpose() * &a), &Matrix::idty(m)));
     println!("QR = A: {}\n", mat_are_close(&(&a * &r), &a_copy));
 
-    let mut a = random_matrix(n, n, &rng);
+    let mut a = random_matrix(n, n, &rng) * 10.0;
     let mut r = Matrix::zeros(n, n);
-    let mut b = random_matrix(n, 1, &rng);
+    let mut b = random_matrix(n, 1, &rng) * 10.0;
     let b_copy = b.clone();
     let a_copy = a.clone();
     qr_gs_decomp(&mut a, &mut r);
     qr_gs_solve(&a, &r, &mut b);
 
-    println!("Generated new random {n} by {n} matrix A and {n}-vector b");
+    println!("Generated random {n} by {n} matrix A");
+    println!("{a_copy}\n");
+    println!("and {n}-vector b\n{b_copy}\n");
     println!("Perfomed QR factorisation on A");
     println!("Solved Rx = Q^Tb for x by back-substitution");
     println!("QRx = b: {}\n", mat_are_close(&(&a_copy * &b), &b_copy));
