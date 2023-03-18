@@ -12,4 +12,17 @@ Learning outcomes of the course (contents of this repo):
   Identification and application of necessary numerical methods in a given physical problem;
   Estimation of the numerical accuracy of result;
 
-
+Current progress:
+ ======================================
+| #  | homework      | A | B | C | sum |
+ ======================================
+| 1  | LinEq         | 6 | 3 | 1 | 10  |
+---------------------------------------
+| 2  | EVD           | 6 | 3 | - |  9  |
+---------------------------------------
+| 3  | LeastSquares  | 6 | 3 | 1 | 10  |
+---------------------------------------
+| 4  | Spline        | 6 | 3 | 1 | 10  |
+ ======================================
+|                    total points: 39  |
+ ======================================

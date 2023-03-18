@@ -1,0 +1,12 @@
+Spline 1:
+Correct b? true
+Correct c? true
+
+Spline 2:
+Correct b? true
+Correct c? true
+
+Spline 3:
+Correct b? true
+Correct c? true
+

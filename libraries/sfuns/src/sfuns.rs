@@ -34,3 +34,8 @@ pub fn are_close(a: f64, b: f64) -> bool {
     if f64::abs(a - b) < f64::max(a.abs(), b.abs()) * eps {return true}
     return false;
 }
+
+use std::ops::{Sub, Div, Mul, Add};
+pub fn map_range<T: Copy + Add<Output = T> + Sub<Output = T> + Div<Output = T> + Mul<Output = T>>(x: T, from_range: &(T, T), to_range: &(T, T)) -> T {
+    (x - from_range.0) / (from_range.1 - from_range.0) * (to_range.1 - to_range.0) + to_range.0
+}
