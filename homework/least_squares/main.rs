@@ -22,7 +22,7 @@ fn main() -> std::io::Result<()> {
     let mut ln_ys = Matrix::new(vec![parse_line(&lines.next().unwrap()?)?]);
     let mut ln_dys = Matrix::new(vec![parse_line(&lines.next().unwrap()?)?]);
 
-    let mut out_file = std::fs::File::create("Out.txt")?;
+    let mut out_file = std::fs::File::create("out.txt")?;
     for ((t, y), dy) in zip(zip(ts.iter(), ln_ys.iter()), ln_dys.iter()) {
         out_file.write(format!("{t}\t{y}\t{dy}\n").as_bytes())?;
     }

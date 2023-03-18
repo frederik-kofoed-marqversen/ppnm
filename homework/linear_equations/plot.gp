@@ -1,5 +1,7 @@
 set terminal svg background "white"
 set key top left
 
-plot [0:2100] "out/times.data" with points \
-            , 7.85/(2000**3)*x**3 with lines
+size = system("tail -n 1 Out/times.data | cut -f 1")
+time = system("tail -n 1 Out/times.data | cut -f 2")
+plot [0:2100] "Out/times.data" with points \
+            , time/(size**3)*x**3 with lines title "f(x) = a x^3"

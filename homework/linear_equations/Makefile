@@ -1,22 +1,19 @@
 libraries = matrix rand sfuns
 library_path = ../../libraries
 
-all: out/test.txt out/times.data out/plot.svg
+all: Out/test.txt Out/times.data Out/plot.svg
 
-out/plot.svg: plot.gp
-	gnuplot plot.gp > out/plot.svg
+Out/plot.svg: plot.gp
+	gnuplot $< > $@
 
-plot.gp: out/times.data make_gp_file.sh
-	./make_gp_file.sh $$(tail -n 1 $< | grep -oE '[^ ]+$$')
-
-out/test.txt: main.bin
+Out/test.txt: main.bin
 	./$< -test > $@
 
-out/times.data : main.bin
+Out/times.data : main.bin
 	>$@
 	for N in $$(seq 200 200 2000); do \
 		echo "Solving with size $$N <= 2000"; \
-		time --format "$$N %e" --output $@ --append \
+		time --format "$$N\t%e" --output $@ --append \
 		./$< -size:$$N;\
 	done
 
@@ -26,4 +23,4 @@ main.bin: main.rs
 
 .PHONEY: clean
 clean:
-	rm -f main.bin out/*
+	rm -f main.bin Out/*

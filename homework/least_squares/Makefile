@@ -2,10 +2,10 @@ libraries = matrix linalg sfuns
 library_path = ../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 
-plot: Out.txt plot.gp
-	gnuplot plot.gp
+Plot.svg: plot.gp out.txt
+	gnuplot $<
 
-Out.txt: make_libraries main.bin
+out.txt: make_libraries main.bin
 	./main.bin
 
 main.bin: main.rs $(rlib_files)
@@ -15,4 +15,4 @@ main.bin: main.rs $(rlib_files)
 make_libraries:
 	$(MAKE) -C $(library_path) $(libraries) > /dev/null
 clean:
-	rm -f main.bin Out.txt plot.svg
+	rm -f main.bin out.txt Plot.svg
