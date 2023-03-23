@@ -1,4 +1,4 @@
-libraries = sfuns linalg matrix rand
+libraries = sfuns rand scientific matrix
 library_path = ../../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 

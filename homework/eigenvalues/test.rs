@@ -1,17 +1,25 @@
 extern crate matrix;
 extern crate rand;
 extern crate sfuns;
-extern crate linalg;
 
 use matrix::Matrix;
-use linalg::eig::jacobi_cyclic;
+use matrix::linalg::eig::jacobi_cyclic;
 use rand::Rng;
 use sfuns::are_close;
 
 use std::iter::zip;
 
-fn random_matrix(rows: usize, cols: usize, rng: &Rng) -> Matrix<f64> {
-    return Matrix::from_data((0..rows*cols).map(|_| rng.f64()).collect(), rows, cols)
+fn random_symmetric_matrix(n: usize, rng: &Rng) -> Matrix<f64> {
+    let mut mat = Matrix::zeros(n, n);
+    for j in 0..n {
+        mat[j][j] = rng.f64() * 10.0;
+        for i in 0..j {
+            let num = rng.f64() * 10.0;
+            mat[j][i] = num;
+            mat[i][j] = num;
+        }
+    }
+    return mat
 }
 
 fn mat_are_close(mat1: &Matrix<f64>, mat2: &Matrix<f64>) -> bool {
@@ -37,8 +45,7 @@ fn main() {
     }
 
     let rng = Rng::new(1234);
-    let mut a = random_matrix(n, n, &rng);
-    a = a.transpose() * a * 10.0;
+    let mut a = random_symmetric_matrix(n, &rng);
     let mut v = Matrix::idty(n);
 
     if !print {

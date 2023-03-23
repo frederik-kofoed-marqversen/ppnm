@@ -1,8 +1,7 @@
 extern crate matrix;
-extern crate linalg;
 
 use matrix::Matrix;
-use linalg::eig::jacobi_cyclic;
+use matrix::linalg::eig::jacobi_cyclic;
 use std::iter::zip;
 
 fn main() {

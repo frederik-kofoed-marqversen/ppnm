@@ -1,7 +1,6 @@
 extern crate sfuns;
-extern crate matrix;
-extern crate linalg;
-use linalg::spline::CubicSpline;
+extern crate scientific;
+use scientific::spline::CubicSpline;
 use sfuns::map_range;
 
 fn main() {

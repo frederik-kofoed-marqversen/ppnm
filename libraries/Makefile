@@ -1,4 +1,4 @@
-libraries = matrix sfuns rand num_complex num_traits linalg
+libraries = matrix sfuns rand num_complex num_traits scientific
 
 all: $(libraries)
 

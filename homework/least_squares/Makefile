@@ -1,4 +1,4 @@
-libraries = matrix linalg sfuns
+libraries = matrix sfuns
 library_path = ../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 

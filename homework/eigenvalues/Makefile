@@ -1,4 +1,4 @@
-libraries = matrix rand sfuns linalg
+libraries = matrix rand sfuns
 library_path = ../../libraries
 rlibs := $(libraries:%=$(library_path)/target/lib%.rlib)
 
@@ -10,16 +10,16 @@ all: tests plots
 # TEST METHOD
 tests: Out/test.txt Out/times.svg
 
-Out/times.svg: plot_tests.gp times.txt
+Out/times.svg: plot_tests.gp times.data
 	gnuplot $< > $@
 
 Out/test.txt: test.bin
 	./test.bin -print:true -size:5 > $@
 
-times.txt: test.bin
+times.data: test.bin
 	>$@
-	for N in $$(seq 20 20 200); do \
-		echo "Solving with size $$N <= 200"; \
+	for N in $$(seq 50 25 300); do \
+		echo "Solving with size $$N <= 300"; \
 		time --format "$$N\t%e" --output $@ --append \
 		./$< -size:$$N -print:false;\
 	done
@@ -60,4 +60,4 @@ test.bin: test.rs | make_libraries
 make_libraries:
 	$(MAKE) -C $(library_path) $(libraries) > /dev/null
 clean:
-	rm -f *.bin *.data Out/* times.txt
+	rm -f *.bin *.data Out/*

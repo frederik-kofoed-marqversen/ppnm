@@ -35,7 +35,16 @@ pub fn are_close(a: f64, b: f64) -> bool {
     return false;
 }
 
-use std::ops::{Sub, Div, Mul, Add};
-pub fn map_range<T: Copy + Add<Output = T> + Sub<Output = T> + Div<Output = T> + Mul<Output = T>>(x: T, from_range: &(T, T), to_range: &(T, T)) -> T {
+pub fn map_range(x: f64, from_range: &(f64, f64), to_range: &(f64, f64)) -> f64 {
     (x - from_range.0) / (from_range.1 - from_range.0) * (to_range.1 - to_range.0) + to_range.0
+}
+
+pub fn linspace(start: f64, end: f64, steps: usize) -> Vec<f64> {
+    let mut result = Vec::with_capacity(steps);
+    let from_range = (0.0, steps as f64);
+    let to_range = (start, end);
+    for i in 0..steps {
+        result.push(map_range(i as f64, &from_range, &to_range));
+    }
+    return result;
 }

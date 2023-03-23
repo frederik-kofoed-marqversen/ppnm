@@ -1,8 +1,7 @@
 extern crate matrix;
-extern crate linalg;
 
 use matrix::Matrix;
-use linalg::lstsq;
+use matrix::linalg::lstsq;
 use std::iter::zip;
 use std::io::{Write, BufRead};
 
