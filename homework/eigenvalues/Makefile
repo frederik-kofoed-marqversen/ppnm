@@ -4,8 +4,9 @@ rlibs := $(libraries:%=$(library_path)/target/lib%.rlib)
 
 drs = 0.03 0.04 0.06 0.08 0.1 0.15 0.2 0.3 0.4
 r_maxs = 10 9 8 7 6 5 4 3 2
+sizes = 300 275 250 225 200 175 150 125 100 75 50 25
 
-all: tests plots
+all: tests hydrogen_plots
 
 # TEST METHOD
 tests: Out/test.txt Out/times.svg
@@ -17,18 +18,16 @@ Out/test.txt: test.bin
 	./test.bin -print:true -size:5 > $@
 
 times.data: test.bin
-	>$@
-	for N in $$(seq 50 25 300); do \
-		echo "Solving with size $$N <= 300"; \
-		time --format "$$N\t%e" --output $@ --append \
-		./$< -size:$$N -print:false;\
-	done
+	> $@
+	$(MAKE) $(sizes:%=size-%)
 
 size-%: test.bin
-	time --format "$(subst size-,,$@) %e" --output Out/times.txt --append ./$< -size:$(subst size-,,$@) -print:false
+	time --format "$(subst size-,,$@) %e" --output times.data --append ./$< -size:$(subst size-,,$@) -print:false
 
-# MAKE PLOTS
-plots: plot.gp dr.data r_max.data states.data
+# MAKE PLOTS OF HYDROGEN
+hydrogen_plots: Out/dr_conv.svg Out/r_max_conv.svg Out/states.svg
+
+Out/dr_conv.svg Out/r_max_conv.svg Out/states.svg: plot.gp dr.data r_max.data states.data
 	gnuplot $<
 
 dr.data: main.bin

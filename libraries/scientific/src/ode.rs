@@ -136,8 +136,9 @@ pub struct AdaptiveStepSizeDriver {
 }
 
 impl AdaptiveStepSizeDriver {
-    pub fn new(stepper: RungeKuttaStepper) -> Self {
-        Self{stepper: stepper, abs: 0.01, rel: 0.01}
+    pub fn new(stepper: RungeKuttaStepper, precision: Option<(f64, f64)>) -> Self {
+        let (abs, rel) = precision.unwrap_or((0.01, 0.01));
+        Self{stepper: stepper, abs: abs, rel: rel}
     }
 
     pub fn run(&self, f: fn(f64, Vec<f64>) -> Vec<f64>, a: f64, ya: Vec<f64>, b: f64, mut h: f64) -> (Vec<f64>, Vec<Vec<f64>>) {

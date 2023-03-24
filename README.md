@@ -19,5 +19,5 @@ Current progress:
 | 2 | Eigenvalues      |  6 |  3 |  - |   9 |
 | 3 | Least Squares    |  6 |  3 |  1 |  10 |
 | 4 | Splines          |  6 |  3 |  1 |  10 |
-| 5 | ODE              |  6 |  3 |  - |   9 |
-|   | Total points:    |    |    |    |  48 |
+| 5 | ODE              |  6 |  3 |  1 |  10 |
+|   | Total points:    |    |    |    |  49 |

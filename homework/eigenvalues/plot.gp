@@ -6,7 +6,8 @@ set xlabel "r (Bohr)"
 set ylabel "f(r)"
 set tics out
 set title "3 lowest Hydrogen eigenstates"
-plot for [idx=0:2] "states.data" index idx with lines title "state: ".idx
+plot for [idx=0:2] "states.data" index idx with lines title "state: ".idx, \
+        exp(-x)/sqrt(pi) with lines linewidth 2 dashtype 2 linecolor "black" title "Analytical result"
 
 set output "Out/dr_conv.svg"
 set key top left

@@ -1,4 +1,4 @@
-libraries = sfuns scientific
+libraries = scientific
 library_path = ../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 

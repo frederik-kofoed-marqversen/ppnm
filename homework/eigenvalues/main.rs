@@ -50,8 +50,11 @@ fn solve_hydrogen(r_max: f64, dr: f64, num_states: usize) {
         for i in 0..num_states {
             // println!("state {i} energy: {:.4}", h[i][i]);
             println!("0  0");
-            for (rj, vij) in zip(r.iter(), v[i].iter()) {
-                println!("{rj}  {vij}");
+            let vi = &v[i];
+            let normalisation: f64 = vi.iter().fold(0.0, |sum, vij| sum + dr*vij*vij*4.0*std::f64::consts::PI).sqrt();
+
+            for (rj, vij) in zip(r.iter(), vi.iter()) {
+                println!("{rj}  {}", vij / rj / normalisation);
             }
             println!("{r_max}  0");
             println!("\n");

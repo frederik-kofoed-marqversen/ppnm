@@ -1,6 +1,8 @@
 set terminal svg
 
-size = system("tail -n 1 times.data | cut -f 1")
-time = system("tail -n 1 times.data | cut -f 2")
+set fit quiet
+set fit logfile '/dev/null'
+f(x) = a * x**3
+fit f(x) 'times.data' via a
 plot "times.data" with points,\
-    time/(size**3)*x**3 with lines title "f(x) = a x^3"
+    f(x) with lines title "fit to: a*x^3"
