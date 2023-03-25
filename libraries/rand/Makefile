@@ -14,7 +14,7 @@ test:
 	rm $(test_target)
 
 $(rlib_target): $(library_files)
-	rustc $(lib_path) --crate-name $(name) --crate-type lib --out-dir $(OUT_DIR)
+	rustc $(lib_path) -O --crate-name $(name) --crate-type lib --out-dir $(OUT_DIR)
 
 .PHONY: clean
 clean:
