@@ -4,7 +4,7 @@ rlibs := $(libraries:%=$(library_path)/target/lib%.rlib)
 
 drs = 0.03 0.04 0.06 0.08 0.1 0.15 0.2 0.3 0.4
 r_maxs = 10 9 8 7 6 5 4 3 2
-sizes = 300 275 250 225 200 175 150 125 100 75 50 25
+sizes = 350 325 300 275 250 225 200 175 150 125 100 75 50 25
 
 all: tests hydrogen_plots
 
@@ -20,9 +20,14 @@ Out/test.txt: test.bin
 times.data: test.bin
 	> $@
 	$(MAKE) $(sizes:%=size-%)
+	echo "\n" >> $@
+	$(MAKE) $(sizes:%=size2-%)
 
 size-%: test.bin
-	time --format "$(subst size-,,$@) %e" --output times.data --append ./$< -size:$(subst size-,,$@) -print:false
+	time --format "$(subst size-,,$@) %e" --output times.data --append ./$< -size:$(subst size-,,$@)
+
+size2-%: test.bin
+	time --format "$(subst size2-,,$@) %e" --output times.data --append ./$< -size:$(subst size2-,,$@) -opt:true
 
 # MAKE PLOTS OF HYDROGEN
 hydrogen_plots: Out/dr_conv.svg Out/r_max_conv.svg Out/states.svg

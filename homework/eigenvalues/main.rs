@@ -1,7 +1,7 @@
 extern crate matrix;
 
 use matrix::Matrix;
-use matrix::linalg::eig::jacobi_cyclic;
+use matrix::linalg::eig::jacobi_cyclic_optimised;
 use std::iter::zip;
 
 fn main() {
@@ -29,7 +29,6 @@ fn solve_hydrogen(r_max: f64, dr: f64, num_states: usize) {
     let num_points = (r_max / dr) as usize - 1;
     let r: Vec<f64> = (0..num_points).map(|i| dr*(i+1) as f64).collect();
     let mut h = Matrix::<f64>::zeros(num_points, num_points);
-    let mut v = Matrix::<f64>::idty(num_points);
     for i in 0..num_points-1 {
         h[i][i] = -2.0;
         h[i+1][i] = 1.0;
@@ -42,10 +41,10 @@ fn solve_hydrogen(r_max: f64, dr: f64, num_states: usize) {
     } 
     for i in 0..num_points {h[i][i] += -1.0/r[i];}
 
-    jacobi_cyclic(&mut h, &mut v);
+    let (eigvals, v) = jacobi_cyclic_optimised(&mut h);
 
     if num_states == 0 {
-        println!("{:.4} {r_max} {dr}", h[0][0]); // lowest energy
+        println!("{:.4} {r_max} {dr}", eigvals[0]); // lowest energy
     } else {
         for i in 0..num_states {
             // println!("state {i} energy: {:.4}", h[i][i]);

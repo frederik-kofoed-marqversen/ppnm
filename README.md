@@ -16,8 +16,8 @@ Current progress:
 | # | homework         |  A |  B |  C | sum |
 | - | ---------------- | -: | -: | -: | --: |
 | 1 | Linear Equations |  6 |  3 |  1 |  10 |
-| 2 | Eigenvalues      |  6 |  3 |  - |   9 |
+| 2 | Eigenvalues      |  6 |  3 |  1 |  10 |
 | 3 | Least Squares    |  6 |  3 |  1 |  10 |
 | 4 | Splines          |  6 |  3 |  1 |  10 |
 | 5 | ODE              |  6 |  3 |  1 |  10 |
-|   | Total points:    |    |    |    |  49 |
+|   | Total points:    |    |    |    |  50 |

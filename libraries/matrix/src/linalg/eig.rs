@@ -26,8 +26,11 @@ fn j_times(a: &mut Matrix<f64>, p: usize, q: usize, theta: f64) {
     }
 }
 
-pub fn jacobi_cyclic(a: &mut Matrix<f64>, v: &mut Matrix<f64>) {
+pub fn jacobi_cyclic(a: &mut Matrix<f64>) -> Matrix<f64>{
+    // makes A diagonal -> D
+    // returns transformation matrix such that A = V D V^T
     let n = a.num_cols;
+    let mut v = Matrix::<f64>::idty(n);
     let mut changed = true;
     while changed {
         changed = false;
@@ -41,10 +44,102 @@ pub fn jacobi_cyclic(a: &mut Matrix<f64>, v: &mut Matrix<f64>) {
                 if !are_close(new_app, app) || !are_close(new_aqq, aqq) {
                     times_j(a, p, q, theta);
                     j_times(a, p, q, -theta);
-                    times_j(v, p, q, theta);
+                    times_j(&mut v, p, q, theta);
                     changed = true;
                 }
             }
         }
+    }
+    return v
+}
+
+pub fn jacobi_cyclic_optimised(a: &mut Matrix<f64>) -> (Vec<f64>, Matrix<f64>) {
+    // preserves lower triangle and diagonal of A 
+    // At the end, upper triangle is zero
+    let n = a.num_cols;
+    let mut v = Matrix::<f64>::idty(n);
+    let mut eigenvalues = Vec::with_capacity(n);
+    for i in 0..n {eigenvalues.push(a[i][i])}
+    
+    let mut changed = true;
+    while changed {
+        changed = false;
+        for p in 0..n-1 {
+            for q in p+1..n {
+                let (apq, app, aqq) = (a[q][p], eigenvalues[p], eigenvalues[q]);
+                let theta = 0.5 * f64::atan2(2.0 * apq, aqq - app);
+                let (c, s) = (theta.cos(), theta.sin());
+                let new_app = c*c*app-2.0*s*c*apq+s*s*aqq;
+                let new_aqq = s*s*app+2.0*s*c*apq+c*c*aqq;
+
+                if !are_close(new_app, app) || !are_close(new_aqq, aqq) {
+                    changed = true;  // do one more cycle after this one
+
+                    for i in 0..p {  // update both collumn p and q up to i=p-1
+                        let (aip, aiq) = (a[p][i], a[q][i]);
+                        a[p][i] = c * aip - s * aiq;
+                        a[q][i] = s * aip + c * aiq;
+                    }
+                    for j in q+1..n {  // update both row p and q from j=q+1
+                        let (apj, aqj) = (a[j][p], a[j][q]);
+                        a[j][p] = c * apj - s * aqj;
+                        a[j][q] = s * apj + c * aqj;
+                    }
+                    for k in p+1..q {  // update the in-betweens
+                        let (apk, akq) = (a[k][p], a[q][k]);
+                        a[k][p] = c * apk - s * akq;
+                        a[q][k] = c * akq + s * apk;
+                    }
+                    a[q][p] = 0.0;  // the zeroed out element
+                    eigenvalues[p] = new_app;  // the diagonal values
+                    eigenvalues[q] = new_aqq;
+                    
+                    times_j(&mut v, p, q, theta); // update v
+                }
+            }
+        }
+    }
+    return (eigenvalues, v)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_jacobi_evd() {
+        let data: Vec<f64> = vec![4.0, 2.0, 2.0, 1.0];
+        let mut mat = Matrix::from_data(data, 2, 2);
+        let mat1 = mat.clone();
+        let mut v = Matrix::<f64>::idty(2);
+        jacobi_cyclic(&mut mat, &mut v);
+        assert!(
+            are_close(mat[0][0], 0.0)
+            &&
+            are_close(mat[1][1], 5.0)
+        );
+        assert_eq!(
+            &v * mat * v.transpose(),
+            mat1
+        );
+    }
+
+    #[test]
+    fn test_optimised_evd() {
+        let data: Vec<f64> = vec![4.0, 2.0, 2.0, 1.0];
+        let mut mat = Matrix::from_data(data, 2, 2);
+        let (eigvals, v) = jacobi_cyclic_optimised(&mut mat);
+        assert_eq!(
+            eigvals,
+            vec![0.0, 5.0]
+        );
+        assert_eq!(
+            mat,
+            Matrix::from_data(vec![4.0, 2.0, 0.0, 1.0], 2, 2)
+        );
+        assert_eq!(
+            &v * v.transpose(),
+            Matrix::idty(2)
+        );
     }
 }

@@ -3,7 +3,7 @@ extern crate rand;
 extern crate sfuns;
 
 use matrix::Matrix;
-use matrix::linalg::eig::jacobi_cyclic;
+use matrix::linalg::eig::{jacobi_cyclic, jacobi_cyclic_optimised};
 use rand::Rng;
 use sfuns::are_close;
 
@@ -31,6 +31,7 @@ fn mat_are_close(mat1: &Matrix<f64>, mat2: &Matrix<f64>) -> bool {
 
 fn main() {
     let mut print: bool = false;
+    let mut opt: bool = false;
     let mut n: usize = 5;
     
     let mut args: Vec<String> = std::env::args().collect();
@@ -40,19 +41,23 @@ fn main() {
         match words[0] {
             "-print" => print = words[1].parse::<bool>().unwrap(),
             "-size" => n = words[1].parse::<usize>().unwrap(),
+            "-opt" => opt = words[1].parse::<bool>().unwrap(),
             _ => panic!("Command '{}' not found.", words[0]),
         }
     }
 
     let rng = Rng::new(1234);
     let mut a = random_symmetric_matrix(n, &rng);
-    let mut v = Matrix::idty(n);
 
     if !print {
-        jacobi_cyclic(&mut a, &mut v);
+        if opt {
+            jacobi_cyclic_optimised(&mut a);
+        } else {
+            jacobi_cyclic(&mut a);
+        }
     } else {
         let a_copy = a.clone();
-        jacobi_cyclic(&mut a, &mut v);
+        let v = jacobi_cyclic(&mut a);
 
         println!("Generated random symmetric {n} by {n} matrix A");
         println!("A={a_copy}\n");
