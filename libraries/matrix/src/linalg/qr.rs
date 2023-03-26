@@ -29,3 +29,44 @@ pub fn inverse(q: &Matrix<f64>, r: &Matrix<f64>) -> Matrix<f64> {
     }
     return result;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::iter::zip;
+    
+    #[test]
+    fn test_decomp() {
+        let mut a = Matrix::new(vec![vec![2.0, 2.0, 1.0], vec![3.0, 4.0, 1.0]]);
+        let mut r = Matrix::zeros(2, 2);
+        decomp(&mut a, &mut r);
+        
+        assert!(
+            zip(
+                r.iter(), 
+                [3.0, 0.0, 5.0, 1.0]
+            ).fold(true, |acc, (item, test)| acc && ((item-test).abs() < 1e-15))
+        );
+        assert!(
+            zip(
+                a.iter(), 
+                [2.0/3.0, 2.0/3.0, 1.0/3.0, -1.0/3.0, 2.0/3.0, -2.0/3.0]
+            ).fold(true, |acc, (item, test)| acc && ((item-test).abs() < 1e-15))
+        );
+    }
+
+    #[test]
+    fn test_inverse() {
+        let mut a = Matrix::new(vec![vec![1.0, 0.0, 3.0], vec![3.0, 2.0, 1.0], vec![1.0, 2.0, 0.0]]);
+        let mut r = Matrix::zeros(3, 3);
+        decomp(&mut a, &mut r);
+        let a_inv = inverse(&a, &r);
+        
+        assert!(
+            zip(
+                a_inv.iter(), 
+                [-0.2, 0.6, -0.6, 0.1, -0.3, 0.8, 0.4, -0.2, 0.2]
+            ).fold(true, |acc, (item, test)| acc && ((item-test).abs() < 1e-15))
+        );
+    }
+}

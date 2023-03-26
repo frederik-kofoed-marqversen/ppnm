@@ -142,15 +142,14 @@ impl AdaptiveStepSizeDriver {
     }
 
     pub fn run(&self, f: fn(f64, Vec<f64>) -> Vec<f64>, a: f64, ya: Vec<f64>, b: f64, mut h: f64) -> (Vec<f64>, Vec<Vec<f64>>) {
-        assert!(a < b);
+        h = h.abs() * (b-a).signum();  // make sure step is in the right direction
 
         let mut x = a;
         let mut y = ya;
         let mut x_list = vec![x];
         let mut y_list = vec![y.clone()];
-        loop {
-            if x >= b {return (x_list, y_list)}  // job done
-            if x+h > b {h = b-x;}  // last step should end at b
+        while 0.0 < (b-x)*h.signum() {
+            if 0.0 < (x+h - b)*h.signum() {h = b-x;}  // last step should end at b
             let (yh, mut err) = self.stepper.step(f, x, y.clone(), h);
             let tol: Vec<f64> = yh.iter().map(|ti| f64::max(self.abs, ti.abs() * self.rel) * h/(b-a)).collect();
             err.iter_mut().for_each(|ei| *ei=ei.abs());
@@ -167,5 +166,57 @@ impl AdaptiveStepSizeDriver {
             let factor = zip(&tol, &err).map(|(ti, ei)| ti/ei).fold(f64::INFINITY, |a, b| a.min(b));
             h *= f64::min(factor.powf(0.25) * 0.95, 2.0);  // adapt stepsize
         }
+        return (x_list, y_list)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_rkf45_1() {
+        let abs = 1e-5;
+        let stepper = RungeKuttaStepper::rk45();
+        let driver = AdaptiveStepSizeDriver::new(stepper, Some((abs, 0.0)));
+        let f = |_t: f64, mut y: Vec<f64>| ->  Vec<f64> {
+            (y[0], y[1]) = (y[1], -y[0]);
+            return y;
+        };
+
+        let t0 = 0.0;
+        let y0 = vec![0.0, 1.0];
+        let endpoint = 10.0;
+
+        let (_ts, ys) = driver.run(f, t0, y0, endpoint, 0.1);
+
+        assert!(
+            (f64::sin(endpoint) - ys.last().unwrap()[0]).abs() < abs
+                &&
+            (f64::cos(endpoint) - ys.last().unwrap()[1]).abs() < abs
+        );
+    }
+
+    #[test]
+    fn test_rkf45_2() {
+        let abs = 1e-5;
+        let stepper = RungeKuttaStepper::rk45();
+        let driver = AdaptiveStepSizeDriver::new(stepper, Some((abs, 0.0)));
+        let f = |_t: f64, mut y: Vec<f64>| ->  Vec<f64> {
+            (y[0], y[1]) = (y[1], -y[0]);
+            return y;
+        };
+
+        let t0 = 0.0;
+        let y0 = vec![0.0, 1.0];
+        let endpoint = -10.0;
+
+        let (_ts, ys) = driver.run(f, t0, y0, endpoint, 0.1);
+
+        assert!(
+            (f64::sin(endpoint) - ys.last().unwrap()[0]).abs() < abs
+                &&
+            (f64::cos(endpoint) - ys.last().unwrap()[1]).abs() < abs
+        );
     }
 }

@@ -116,11 +116,16 @@ impl CubicSpline {
         }
         return result;
     }
+
+    pub fn integrate(&self, a: f64, b: f64) -> f64 {
+        return self.integral(b) - self.integral(a)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::iter::zip;
 
     #[test]
     fn test_binary_search_1() {
@@ -154,5 +159,29 @@ mod tests {
     fn test_binary_search_4() {
         let array: Vec<f64> = vec![2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
         binary_search_bin(&array, 10.0);
+    }
+
+    #[test]
+    fn test_cubic_spline() {
+        let f = |x: f64| -> f64 {10.0 * (x - 2.0*x*x + x*x*x)};
+        let xs = vec![0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5];
+        let ys = xs.iter().map(|x| f(*x)).collect();
+        
+        let spline = CubicSpline::new(xs, ys);
+        let test_points = [0.35, 0.71, 0.19];
+        let integral = spline.integrate(0.2, 1.4);
+        let derivative = spline.derivative(1.0);
+        let spline_vals: Vec<f64> = test_points.iter().map(|x| spline.evaluate(*x)).collect();
+        let exact_vals: Vec<f64> = test_points.iter().map(|x| f(*x)).collect();
+
+        assert!(
+            zip(spline_vals, exact_vals).fold(true, |acc, (a, b)| acc && (a-b).abs() < 0.001)
+        );
+        assert!(
+            (integral - 0.96).abs() < 0.001
+        );
+        assert!(
+            (derivative - 0.0).abs() < 0.01
+        );
     }
 }

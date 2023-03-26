@@ -33,3 +33,26 @@ pub fn correlations(covariance: &mut Matrix<f64>) { // only updates upper triang
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_least_squares_fit() {
+        let cs = [4.0, -1.0, 2.0];
+        let f = |x| cs[0] + cs[1]*x + cs[2]*x*x;
+        let xs = Matrix::from_data(vec![0.0, 5.0, 10.0], 3, 1);
+        let ys = Matrix::from_data(xs.iter().map(|x| f(x)).collect(), 3, 1);
+        let dys = Matrix::from_data(vec![0.01; 3], 3, 1);
+        
+        let fs: Vec<&dyn Fn(f64) -> f64> = vec![&|_x| 1.0, &|x| x, &|x| x*x,];
+        let (fit_cs, sigma) = fit(&fs, &xs, &ys, &dys);
+        assert!(
+            sigma.iter().fold(true, |acc, item| acc && (item < &1e-4))
+        );
+        assert!(
+            fit_cs.iter().enumerate().fold(true, |acc, (i, item)| acc && ((item-cs[i]).abs() < 1e-10))
+        );
+    }
+}

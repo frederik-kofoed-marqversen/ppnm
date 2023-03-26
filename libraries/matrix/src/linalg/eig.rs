@@ -111,8 +111,7 @@ mod tests {
         let data: Vec<f64> = vec![4.0, 2.0, 2.0, 1.0];
         let mut mat = Matrix::from_data(data, 2, 2);
         let mat1 = mat.clone();
-        let mut v = Matrix::<f64>::idty(2);
-        jacobi_cyclic(&mut mat, &mut v);
+        let v = jacobi_cyclic(&mut mat);
         assert!(
             are_close(mat[0][0], 0.0)
             &&
