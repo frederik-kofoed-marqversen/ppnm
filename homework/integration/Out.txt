@@ -1,0 +1,7 @@
+Integrand evaluations for f(x)=1/√(x)
+	integrate(f, 0, 1): 4292
+	clenshaw_curtis(f, 0, 1): 8
+
+Integrand evaluations for f(x)=ln(x)/√(x)
+	integrate(f, 0, 1): 4292
+	clenshaw_curtis(f, 0, 1): 28

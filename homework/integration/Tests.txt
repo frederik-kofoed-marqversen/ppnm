@@ -1,0 +1,14 @@
+
+running 9 tests
+test tests::gamma_function ... ok
+test tests::improper_polynomial_integral ... ok
+test tests::gaussian_integral ... ok
+test tests::integral_A1 ... ok
+test tests::integral_A3 ... ok
+test tests::integral_B1 ... ok
+test tests::integral_B2 ... ok
+test tests::integral_A2 ... ok
+test tests::integral_A4 ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

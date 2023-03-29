@@ -1,10 +1,10 @@
-# ppnm
-Code and notes from the course "Practical Programming and Numerical Methods" in the spring of 2023
+# PPNM
+Code and notes from the course "Practical Programming and Numerical Methods" (PPNM) in the spring of 2023
 
 ## Libraries
 The libraries folder contains all of the dependencies used in exercises and homework. All libraries, except for the ones listed below, are original and were written during the course.
-* `num_complex` + `num_traits`: From the official "num" crate
-* `rand`: Minimal implementation of the offical "rand" crate.
+* `num_complex` + `num_traits`: From the official [`num`](https://crates.io/crates/rand) crate.
+* `rand`: Minimal implementation of core features from the offical [`rand`](https://crates.io/crates/num) crate.
 
 ## Why have I not used Cargo?
 One of the prescribed learning outcomes of the course was to learn how to use the GNU make utility for management and execution of a project. Using Cargo would have made this a trivial exercise witout much exposure to make.
@@ -25,7 +25,8 @@ One of the prescribed learning outcomes of the course was to learn how to use th
 | 3 | Least Squares    |  6 |  3 |  1 |  10 |
 | 4 | Splines          |  6 |  3 |  1 |  10 |
 | 5 | ODE              |  6 |  3 |  1 |  10 |
-|   | Total points:    |    |    |    |  50 |
+| 6 | Integration      |  6 |  - |  - |   6 |
+|   | Total points:    |    |    |    |  56 |
 
 ## License
 The contents of this repo are distributed under the the [MIT license](http://opensource.org/licenses/MIT)
