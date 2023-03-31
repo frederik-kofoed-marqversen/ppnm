@@ -26,6 +26,8 @@ plot "data.txt" index 1 using 1:2 smooth csplines with lines linewidth 2 title "
 
 set output "Three_body.svg"
 set key top left
+unset xlabel
+unset ylabel
 set tics out
 set title "Three body system"
 set xzeroaxis

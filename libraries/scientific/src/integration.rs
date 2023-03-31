@@ -30,8 +30,8 @@ pub fn integrate(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Option<(f64
 pub fn recursive_adaptive_integrator(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Option<(f64, f64)>) -> (f64, f64, u32) {
     let (abs, rel) = precision.unwrap_or((0.01, 0.01));
     let (f2, f3) = ((f)(a+2.0/6.0*(b-a)), (f)(a+4.0/6.0*(b-a)));
-    let (int, error, evals) = integrate_recursive(&f, a, b, abs, rel, f2, f3);
-    return (int, error, evals+2)
+    let (int, variance, evals) = integrate_recursive(&f, a, b, abs, rel, f2, f3);
+    return (int, variance.sqrt(), evals+2)
 }
 
 fn integrate_recursive(f: &impl Fn(f64) -> f64, a: f64, b: f64, abs:f64, rel:f64, f2: f64, f3: f64) -> (f64, f64, u32) {
@@ -42,9 +42,9 @@ fn integrate_recursive(f: &impl Fn(f64) -> f64, a: f64, b: f64, abs:f64, rel:f64
     if error <= f64::max(abs, rel*int.abs()) {
         return (int, error.powi(2), 2);
     } else {
-        let (int1, error1, evals1) = integrate_recursive(f, a, (a+b)/2.0, abs/f64::sqrt(2.0), rel, f1, f2);
-        let (int2, error2, evals2) = integrate_recursive(f, (a+b)/2.0, b, abs/f64::sqrt(2.0), rel, f3, f4);
-        return (int1+int2, error1+error2, evals1+evals2+2);
+        let (int1, variance1, evals1) = integrate_recursive(f, a, (a+b)/2.0, abs/f64::sqrt(2.0), rel, f1, f2);
+        let (int2, variance2, evals2) = integrate_recursive(f, (a+b)/2.0, b, abs/f64::sqrt(2.0), rel, f3, f4);
+        return (int1+int2, variance1+variance2, evals1+evals2+2);
     }
 }
 

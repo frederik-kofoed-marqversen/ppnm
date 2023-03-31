@@ -7,6 +7,8 @@ Integrate -> 0.6726808815659386
 Clenshaw Curtis -> 0.6672761635962242
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 12
+Python SciPy
+	Integrand evaluations: 21
 
 ∫_0^1 dx 1/√(x) = 2
 Integrate -> 1.999516117504203
@@ -15,6 +17,8 @@ Integrate -> 1.999516117504203
 Clenshaw Curtis -> 1.9998703183415452
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 8
+Python SciPy
+	Integrand evaluations: 231
 
 ∫_0^1 dx 4√(1-x²) = π = 3.141592653589793
 Integrate -> 3.1460225439874128
@@ -23,31 +27,43 @@ Integrate -> 3.1460225439874128
 Clenshaw Curtis -> 3.142981269311448
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 12
+Python SciPy
+	Integrand evaluations: 63
 
-∫_0^1 dx 1n(x)/√(x) = -4
-Integrate -> -3.998575455036829
+∫_0^1 dx ln(x)/√(x) = -4
+Integrate -> -3.997404287195039
 	Absolute accuracy < 0.01: true
-	Integrand evaluations: 33316
-Clenshaw Curtis -> -3.9990539267149265
-	Absolute accuracy < 0.01: true
-	Integrand evaluations: 52
+	Integrand evaluations: 4292
+Clenshaw Curtis -> -3.981446630549771
+	Absolute accuracy < 0.01: false
+	Integrand evaluations: 28
+Python SciPy
+	Integrand evaluations: 231
 
 ∫_0^∞ dx 1/(1+x^2) = π/2 = 1.5707963267948966
 Integrate -> 1.572860502368699
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 8
+Python SciPy
+	Integrand evaluations: 15
 
 ∫_1^∞ dx 1/x^2 = 1
 Integrate -> 0.9999999999999999
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 4
+Python SciPy
+	Integrand evaluations: 15
 
 ∫_(-∞)^∞ dx e^(-x^2) = √π = 1.7724538509055159
 Integrate -> 1.7698146647016095
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 32
+Python SciPy
+	Integrand evaluations: 150
 
 ∫_0^∞ dx x^4 * e^(-x) = Γ(4 + 1) = 4! = 24
 Integrate -> 24.004518033421817
 	Absolute accuracy < 0.01: true
 	Integrand evaluations: 52
+Python SciPy
+	Integrand evaluations: 105
