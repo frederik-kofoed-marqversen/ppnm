@@ -1,14 +1,8 @@
-libraries = sfuns
+libraries = sfuns scientific
 library_path = ../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 
-all: make_libraries Erf.svg Out.txt Tests.txt
-
-Tests.txt: test.bin
-	./$< > $@
-	
-test.bin: main.rs
-	rustc $< --test -o $@ $(foreach lib,$(libraries),--extern $(lib)=$(library_path)/target/lib$(lib).rlib)
+all: make_libraries Erf.svg Out.txt
 
 Erf.svg: erf.gp erf.data
 	gnuplot $< > $@
