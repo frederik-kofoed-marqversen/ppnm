@@ -1,9 +1,9 @@
 extern crate sfuns;
 extern crate matrix;
-extern crate rand;
+extern crate scientific;
 use sfuns::are_close;
 use matrix::Matrix;
-use rand::Rng;
+use scientific::rand::Rng;
 
 fn solve_tridiagonal_system(left_diag: &Vec<f64>, diag: &mut Vec<f64>, right_diag: &Vec<f64>, b: &mut Vec<f64>) {
     // solve (left_diag)_i x_{i-1} + (diag)_i x_i + (right_diag)_i x_{i+1} = b_i

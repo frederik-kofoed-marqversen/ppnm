@@ -1,9 +1,9 @@
-libraries = matrix rand sfuns
+libraries = matrix sfuns scientific
 library_path = ../../libraries
 
-all: Out/test.txt Out/times.data Out/plot.svg
+all: Out/test.txt Out/plot.svg
 
-Out/plot.svg: plot.gp
+Out/plot.svg: plot.gp Out/times.data
 	gnuplot $< > $@
 
 Out/test.txt: main.bin

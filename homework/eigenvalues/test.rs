@@ -1,10 +1,10 @@
 extern crate matrix;
-extern crate rand;
+extern crate scientific;
 extern crate sfuns;
 
 use matrix::Matrix;
 use matrix::linalg::eig::{jacobi_cyclic, jacobi_cyclic_optimised};
-use rand::Rng;
+use scientific::rand::Rng;
 use sfuns::are_close;
 
 use std::iter::zip;

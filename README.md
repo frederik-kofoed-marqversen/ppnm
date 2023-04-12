@@ -4,7 +4,7 @@ Code and notes from the course "Practical Programming and Numerical Methods" (PP
 ## Libraries
 The libraries folder contains all of the dependencies used in exercises and homework. All libraries, except for the ones listed below, are original and were written during the course.
 * `num_complex` + `num_traits`: From the official [`num`](https://crates.io/crates/rand) crate.
-* `rand`: Minimal implementation of core features from the offical [`rand`](https://crates.io/crates/num) crate.
+* `scientific::rand`: Minimal implementation of core features from the offical [`rand`](https://crates.io/crates/num) crate.
 
 ## Why have I not used Cargo?
 One of the prescribed learning outcomes of the course was to learn how to use the GNU make utility for management and execution of a project. Using Cargo would have made this a trivial exercise witout much exposure to make.

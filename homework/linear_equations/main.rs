@@ -1,9 +1,9 @@
 extern crate matrix;
-extern crate rand;
+extern crate scientific;
 extern crate sfuns;
 
 use matrix::Matrix;
-use rand::Rng;
+use scientific::rand::Rng;
 use sfuns::are_close;
 
 use std::iter::zip;
