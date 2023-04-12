@@ -1,3 +1,5 @@
+use super::rand::Rng;
+
 pub fn integrate(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Option<(f64, f64)>) -> (f64, f64, u32) {
     match (a.is_infinite(), b.is_infinite()) {
         (true, true) => {
@@ -54,6 +56,24 @@ pub fn clenshaw_curtis(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Optio
     };
     return recursive_adaptive_integrator(&ff, 0.0, std::f64::consts::PI, precision);
 }
+
+pub fn plain_monte_carlo(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, num_points: u64, rng: &mut Rng) -> (f64, f64) {
+    let dim = a.len();
+    let volume = std::iter::zip(&a, &b).fold(1.0, |prod, (ai, bi)| prod * (bi - ai));
+    let (mut sum, mut sum2) = (0.0, 0.0);
+    let mut x = vec![0.0; dim];
+    for _ in 0..num_points {
+        for k in 0..dim {x[k] = a[k] + rng.f64()*(b[k] - a[k])}
+        let fx = f(&x);
+        sum += fx;
+        sum2 += fx * fx;
+    }
+    let mean = sum / num_points as f64;
+    let sigma = (sum2/num_points as f64 - mean*mean).sqrt();
+    
+    return (mean * volume, sigma * volume / f64::sqrt(num_points as f64))
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -115,5 +135,37 @@ mod tests {
         let f = |x: f64| x.powi(5-1) * f64::exp(-x);
         let i = integrate(&f, 0.0, f64::INFINITY, None).0;
         assert!((i - 24.0).abs() < 0.01);
+    }
+
+    #[test]
+    fn test_plain_monte_carlo_1() {
+        let mut rng = Rng::new(1234);
+        let f = |x: &Vec<f64>| {
+            if x.iter().fold(0.0, |sum, val| sum + val*val).sqrt() <= 1.0 {
+                return 1.0
+            } else {
+                return 0.0
+            }
+        };
+        let (int, sigma) = plain_monte_carlo(&f, vec![0.0, 0.0], vec![2.0, 2.0], 1e6 as u64, &mut rng);
+        assert!(
+            (int - PI / 4.0).abs() < sigma
+        );
+    }
+
+    #[test]
+    fn test_plain_monte_carlo_2() {
+        let mut rng = Rng::new(1234);
+        let f = |x: &Vec<f64>| {
+            if x[0] >= 0.0 && x[1] <= 1.0 && x[1] >= x[0]*x[0] {
+                return x[0] + x[1]
+            } else {
+                return 0.0
+            }
+        };
+        let (int, sigma) = plain_monte_carlo(&f, vec![0.0, 0.0], vec![2.0, 2.0], 1e6 as u64, &mut rng);
+        assert!(
+            (int - 13.0 / 20.0).abs() < sigma
+        );
     }
 }
