@@ -1,3 +1,5 @@
+/// Minimal implementation of core features from the offical [`fastrand`](https://crates.io/crates/fastrand) crate.
+
 use std::cell::Cell;
 
 #[derive(Debug)]

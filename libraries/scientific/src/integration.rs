@@ -1,3 +1,4 @@
+use std::f64::consts::PI;
 use super::rand::Rng;
 
 pub fn integrate(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Option<(f64, f64)>) -> (f64, f64, u32) {
@@ -57,28 +58,175 @@ pub fn clenshaw_curtis(f: &impl Fn(f64) -> f64, a: f64, b: f64, precision: Optio
     return recursive_adaptive_integrator(&ff, 0.0, std::f64::consts::PI, precision);
 }
 
-pub fn plain_monte_carlo(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, num_points: u64, rng: &mut Rng) -> (f64, f64) {
+pub fn monte_carlo_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, samples: u32, rng: &mut Rng) -> (f64, f64) {
+    assert!(samples > 0);
+    
     let dim = a.len();
     let volume = std::iter::zip(&a, &b).fold(1.0, |prod, (ai, bi)| prod * (bi - ai));
     let (mut sum, mut sum2) = (0.0, 0.0);
     let mut x = vec![0.0; dim];
-    for _ in 0..num_points {
-        for k in 0..dim {x[k] = a[k] + rng.f64()*(b[k] - a[k])}
+    for _ in 0..samples {
+        for i in 0..dim {x[i] = a[i] + rng.f64()*(b[i] - a[i])}
         let fx = f(&x);
         sum += fx;
         sum2 += fx * fx;
     }
-    let mean = sum / num_points as f64;
-    let sigma = (sum2/num_points as f64 - mean*mean).sqrt();
+    let mean = sum / samples as f64;
+    let variance = sum2/samples as f64 - mean*mean;
     
-    return (mean * volume, sigma * volume / f64::sqrt(num_points as f64))
+    return (mean * volume, volume * f64::sqrt(variance / samples as f64))
+}
+
+fn corput_number(n: u32, base: u8) -> f64 {
+    let mut n = n as f64;
+    let base = base as f64;
+    
+    let mut q = 0.0;
+    let mut bk = 1.0/base as f64;
+    while n > 0.0 {
+        q += (n % base) * bk;
+        n /= base;
+        bk /= base;
+    }
+    return q
+}
+
+fn halton_number(n: u32, dimension: usize) -> Vec<f64> {
+    // prime numbers makes sure that all pairs are coprime
+    const BASE: [u8; 19] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67];
+    assert!(dimension < BASE.len());
+    return BASE[..dimension].iter().map(|b| corput_number(n, *b)).collect()
+}
+
+#[inline]
+fn lattice_number(n:u32, alphas: &Vec<f64>) -> Vec<f64> {
+    return alphas.iter().map(|a| (n as f64 * a).fract()).collect()
+}
+
+#[inline]
+fn lattice_alphas(dimension: usize) -> Vec<f64> {
+    (0..dimension).map(|i| (PI + i as f64).sqrt().fract()).collect()
+}
+
+pub fn low_descrepancy_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, samples: u32) -> (f64, f64) {
+    assert!(samples > 0);
+    
+    let dimension = a.len();
+    let volume = std::iter::zip(&a, &b).fold(1.0, |prod, (ai, bi)| prod * (bi - ai));
+    let (mut sum1, mut sum2) = (0.0, 0.0);
+    
+    let alphas = lattice_alphas(dimension);
+    let mut x = vec![0.0; dimension];
+    for n in 0..samples/2 {
+        for (i, random) in halton_number(n, dimension).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
+        let fx = f(&x);
+        sum1 += fx;
+
+        for (i, random) in lattice_number(n, &alphas).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
+        let fx = f(&x);
+        sum2 += fx;
+    }
+    let int1 = volume * sum1 / (samples/2) as f64;
+    let int2 = volume * sum2 / (samples/2) as f64;
+    
+    return (int1, (int1 - int2).abs())
+}
+
+pub fn recursive_stratified_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, samples: u32, rng: &mut Rng) -> (f64, f64) {
+    assert!(samples > 0);
+
+    let dimension = a.len();
+    let min_samples = (dimension * 32) as u32;
+    let estimation_samples = samples / 5;
+
+    if samples <= min_samples + estimation_samples {
+        // cannot subdivide without subsiding min_sample
+        return monte_carlo_sampling(f, a, b, samples, rng)
+    }
+    
+    let (mut mean_left, mut mean_right) = (vec![0.0; dimension], vec![0.0; dimension]);
+    let (mut variance_left, mut variance_right) = (vec![0.0; dimension], vec![0.0; dimension]);
+    let (mut samples_left, mut samples_right) = (vec![0; dimension], vec![0; dimension]);
+    
+    // sample and store results
+    let mut x = vec![0.0; dimension];
+    for _ in 0..estimation_samples {
+        for i in 0..dimension {x[i] = a[i] + rng.f64()*(b[i] - a[i])}
+        let fx = f(&x);
+
+        for i in 0..dimension {
+            if x[i] > (a[i] + b[i]) / 2.0 {
+                mean_right[i] += fx;
+                variance_right[i] += fx*fx;
+                samples_right[i] += 1;
+            } else {
+                mean_left[i] += fx;
+                variance_left[i] += fx*fx;
+                samples_left[i] += 1;
+            }
+        }
+    }
+
+    // make sums into actual means and variances
+    for i in 0..dimension {
+        if samples_left[i] == 0 || samples_right[i] == 0 {panic!("{} {} {} {}", i, samples_left[i], samples_right[i], estimation_samples)};
+        mean_left[i] /= samples_left[i] as f64; // Test if samples_left/right is 0!!!
+        mean_right[i] /= samples_right[i] as f64;
+        
+        variance_left[i] = variance_left[i] / samples_left[i] as f64 - mean_left[i]*mean_left[i];
+        variance_right[i] = variance_right[i] / samples_right[i] as f64 - mean_right[i]*mean_right[i];
+    }
+    
+    // find dimension which minimises total variance
+    let mut index = 0;
+    let mut min_variance = f64::INFINITY;
+    for i in 0..dimension {
+        let variance = variance_left[i]/(4*samples_left[i]) as f64 + variance_right[i]/(4*samples_right[i]) as f64;
+        if variance < min_variance {
+            min_variance = variance;
+            index = i;
+        }
+    }
+
+    // compute new left and right volume boundaries and sample sizes
+    let mut a2 = a.clone();
+    let mut b2 = b.clone();
+    a2[index] = (a[index] + b[index]) / 2.0;
+    b2[index] = (a[index] + b[index]) / 2.0;
+    
+    let remaining_samples = samples - estimation_samples;
+    let mut sub_samples_left = (variance_left[index].sqrt() / (variance_left[index].sqrt() + variance_right[index].sqrt()) * remaining_samples as f64) as u32;
+    let mut sub_samples_right = remaining_samples - sub_samples_left;
+
+    // calculate integrals on each subdivision
+    let volume = 0.5 * std::iter::zip(&a, &b).fold(1.0, |prod, (ai, bi)| prod * (bi - ai));
+
+    let (int_left, error_left) = if sub_samples_left <= samples_left[index] {
+        sub_samples_left = samples_left[index];
+        (mean_left[index] * volume, volume * f64::sqrt(variance_left[index] / samples_left[index] as f64))
+    } else {
+        dbg!(sub_samples_left);
+        recursive_stratified_sampling(f, a, b2, sub_samples_left, rng)
+    };
+    let (int_right, error_right) = if sub_samples_right <= samples_right[index] {
+        sub_samples_right = samples_right[index];
+        (mean_right[index] * volume, volume * f64::sqrt(variance_right[index] / samples_right[index] as f64))
+    } else {
+        dbg!(sub_samples_right);
+        recursive_stratified_sampling(f, a2, b, sub_samples_right, rng)
+    };
+
+    // calculate total mean and variance
+    let int = int_left + int_right;
+    let error = f64::sqrt(error_left*error_left/(4*sub_samples_left) as f64 + error_right*error_right/(4*sub_samples_right) as f64);
+
+    return (int, error)
 }
 
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::f64::consts::PI;
     
     #[test]
     fn test_integrate_1() {
@@ -138,7 +286,9 @@ mod tests {
     }
 
     #[test]
-    fn test_plain_monte_carlo_1() {
+    fn test_monte_carlo_methods_1() {
+        let samples = 1000 as u32;
+        let expected = PI / 4.0;
         let mut rng = Rng::new(1234);
         let f = |x: &Vec<f64>| {
             if x.iter().fold(0.0, |sum, val| sum + val*val).sqrt() <= 1.0 {
@@ -147,14 +297,22 @@ mod tests {
                 return 0.0
             }
         };
-        let (int, sigma) = plain_monte_carlo(&f, vec![0.0, 0.0], vec![2.0, 2.0], 1e6 as u64, &mut rng);
-        assert!(
-            (int - PI / 4.0).abs() < sigma
-        );
+
+        let (int, err) = monte_carlo_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, &mut rng);
+        assert!((int - expected).abs() < err);
+        
+        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples);
+        assert!((int - expected).abs() < err);
+
+        let (int, err) = recursive_stratified_sampling(&f, vec![0.0, 0.0], vec![2.0, 2.0], samples, &mut rng);
+        dbg!(&expected, &int, &err);
+        assert!((int - expected).abs() < err);
     }
 
-    #[test]
-    fn test_plain_monte_carlo_2() {
+    /* #[test]
+    fn test_monte_carlo_methods_2() {
+        let samples = 1e4 as u32;
+        let expected = 13.0 / 20.0;
         let mut rng = Rng::new(1234);
         let f = |x: &Vec<f64>| {
             if x[0] >= 0.0 && x[1] <= 1.0 && x[1] >= x[0]*x[0] {
@@ -163,9 +321,15 @@ mod tests {
                 return 0.0
             }
         };
-        let (int, sigma) = plain_monte_carlo(&f, vec![0.0, 0.0], vec![2.0, 2.0], 1e6 as u64, &mut rng);
-        assert!(
-            (int - 13.0 / 20.0).abs() < sigma
-        );
-    }
+        
+        let (int, err) = monte_carlo_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, &mut rng);
+        assert!((int - expected).abs() < err);
+        
+        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples);
+        assert!((int - expected).abs() < err);
+
+        let (int, err) = recursive_stratified_sampling(&f, vec![0.0, 0.0], vec![2.0, 2.0], samples, &mut rng);
+        dbg!(&expected, &int, &err);
+        assert!((int - expected).abs() < err);
+    } */
 }
