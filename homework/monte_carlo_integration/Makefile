@@ -2,10 +2,19 @@ libraries = scientific
 library_path = ../../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 
-run: make_libraries Out.txt
+run: make_libraries Out.txt Error_scaling.svg
+
+Error_scaling.svg: plot.gp scaling.data
+	gnuplot $< > $@
+
+scaling.data: scaling.bin
+	./$< > $@
 
 Out.txt: main.bin
 	./$< > $@
+
+scaling.bin: scaling.rs $(rlib_files)
+	rustc $< $(foreach lib,$(libraries),--extern $(lib)=$(library_path)/target/lib$(lib).rlib) -o $@
 
 main.bin: main.rs $(rlib_files)
 	rustc $< $(foreach lib,$(libraries),--extern $(lib)=$(library_path)/target/lib$(lib).rlib) -o $@

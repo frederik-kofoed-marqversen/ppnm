@@ -14,6 +14,6 @@ Matches the expected: true
 
 ∫_0^π  dx/π ∫_0^π  dy/π ∫_0^π  dz/π [1-cos(x)cos(y)cos(z)]^(-1)
 Expected result: Γ(1/4)4/(4π3) ≈ 1.3932039296856769
-Calculated result: 0.1488257517428517 
-Estimated error: 0.33813483465586347
-Matches the expected: false
+Calculated result: 1.3888926308544935 
+Estimated error: 0.3671031449012407
+Matches the expected: true
