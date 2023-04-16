@@ -43,7 +43,7 @@ fn integrate_recursive(f: &impl Fn(f64) -> f64, a: f64, b: f64, abs:f64, rel:f64
     let int2 = (    f1+f2+f3+    f4) / 4.0 * (b-a); // lower order rule: rectangular
     let error = (int - int2).abs();
     if error <= f64::max(abs, rel*int.abs()) {
-        return (int, error.powi(2), 2);
+        return (int, error, 2);
     } else {
         let (int1, variance1, evals1) = integrate_recursive(f, a, (a+b)/2.0, abs/f64::sqrt(2.0), rel, f1, f2);
         let (int2, variance2, evals2) = integrate_recursive(f, (a+b)/2.0, b, abs/f64::sqrt(2.0), rel, f3, f4);

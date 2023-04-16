@@ -1,5 +1,5 @@
 use super::Matrix;
-use std::ops::Mul;
+use std::ops::{Mul, MulAssign};
 
 macro_rules! matrix_multiply_scalar_right {
     ($MatrixType:ty, $T:tt) => {
@@ -35,3 +35,11 @@ macro_rules! matrix_multiply_scalar_left_impl {
     )*}
 }
 matrix_multiply_scalar_left_impl!(u8, u16, u32, u64, usize, i8, i16, i32, i64, isize, f32, f64);
+
+impl<T: Copy + MulAssign<T>> MulAssign<T> for Matrix<T> {
+    fn mul_assign(&mut self, scalar: T) {
+        for item in self.iter_mut() {
+            *item *= scalar;
+        }
+    }
+}

@@ -40,6 +40,14 @@ impl<T: Copy> Matrix<T> {
         self.data[self.num_rows * col_index + row_index]
     }
 
+    pub fn set(&mut self, val: T, row_index: usize, col_index: usize) {
+        self.data[self.num_rows * col_index + row_index] = val;
+    }
+
+    pub fn data(&self) -> &Vec<T> {
+        &self.data
+    }
+
     pub fn iter(&self) -> impl Iterator<Item=&T>{
         self.data.iter()
     }

@@ -10,7 +10,7 @@ lib: $(rlib_target)
 
 test:
 	rustc $(lib_path) --test -o $(test_target)
-	./$(test_target) monte_carlo
+	./$(test_target)
 	rm $(test_target)
 
 $(rlib_target): $(library_files)

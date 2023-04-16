@@ -3,6 +3,7 @@ use super::Matrix;
 pub mod eig;
 pub mod lstsq;
 pub mod qr;
+pub mod optimisation;
 
 pub fn back_substitution(r: &Matrix<f64>, b: &mut Matrix<f64>) {
     for i in (0..b.num_rows).rev() {

@@ -30,7 +30,7 @@ impl RungeKuttaStepper {
         Self {a: a, b: b, b_star: b_star, c: c, s: s}
     }
 
-    fn compute_ks(&self, f: fn(f64, Vec<f64>) -> Vec<f64>, x: f64, y: &Vec<f64>, h: f64) -> Vec<Vec<f64>> {
+    fn compute_ks(&self, f: &impl Fn(f64, Vec<f64>) -> Vec<f64>, x: f64, y: &Vec<f64>, h: f64) -> Vec<Vec<f64>> {
         let mut ks: Vec<Vec<f64>> = Vec::with_capacity(self.s);
         for n in 0..self.s {
             let xn = x + self.c[n] * h;
@@ -46,7 +46,7 @@ impl RungeKuttaStepper {
         return ks;
     }
     
-    pub fn step(&self, f: fn(f64, Vec<f64>) -> Vec<f64>, x: f64, mut y: Vec<f64>, h: f64) -> (Vec<f64>, Vec<f64>) {
+    pub fn step(&self, f: &impl Fn(f64, Vec<f64>) -> Vec<f64>, x: f64, mut y: Vec<f64>, h: f64) -> (Vec<f64>, Vec<f64>) {
         let mut error = vec![0.0; y.len()];
         let ks = self.compute_ks(f, x, &y, h);
         for (i, ki) in ks.iter().enumerate() {
@@ -141,7 +141,7 @@ impl AdaptiveStepSizeDriver {
         Self{stepper: stepper, abs: abs, rel: rel}
     }
 
-    pub fn run(&self, f: fn(f64, Vec<f64>) -> Vec<f64>, a: f64, ya: Vec<f64>, b: f64, mut h: f64) -> (Vec<f64>, Vec<Vec<f64>>) {
+    pub fn run(&self, f: impl Fn(f64, Vec<f64>) -> Vec<f64>, a: f64, ya: Vec<f64>, b: f64, mut h: f64) -> (Vec<f64>, Vec<Vec<f64>>) {
         h = h.abs() * (b-a).signum();  // make sure step is in the right direction
 
         let mut x = a;
@@ -150,7 +150,7 @@ impl AdaptiveStepSizeDriver {
         let mut y_list = vec![y.clone()];
         while 0.0 < (b-x)*h.signum() {
             if 0.0 < (x+h - b)*h.signum() {h = b-x;}  // last step should end at b
-            let (yh, mut err) = self.stepper.step(f, x, y.clone(), h);
+            let (yh, mut err) = self.stepper.step(&f, x, y.clone(), h);
             let tol: Vec<f64> = yh.iter().map(|ti| f64::max(self.abs, ti.abs() * self.rel) * h/(b-a)).collect();
             err.iter_mut().for_each(|ei| *ei=ei.abs());
             let mut ok = true;

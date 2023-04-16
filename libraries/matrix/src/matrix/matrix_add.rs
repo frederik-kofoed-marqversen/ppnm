@@ -1,5 +1,5 @@
 use super::Matrix;
-use std::ops::{Add, Sub, Neg};
+use std::ops::{Add, Sub, Neg, AddAssign};
 use std::iter::zip;
 
 // ADD TWO MATRICES
@@ -60,6 +60,14 @@ macro_rules! matrix_negate {
 }
 matrix_negate!(&Matrix<T>, T);
 matrix_negate!(Matrix<T>, T);
+
+impl<T: Copy + AddAssign<T>> AddAssign<Matrix<T>> for Matrix<T> {
+    fn add_assign(&mut self, other: Matrix<T>) {
+        for (item, scalar) in zip(self.iter_mut(), other.iter()) {
+            *item += *scalar;
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
