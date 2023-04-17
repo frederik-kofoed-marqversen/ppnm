@@ -77,52 +77,38 @@ pub fn monte_carlo_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f
     return (mean * volume, volume * f64::sqrt(variance / samples as f64))
 }
 
-fn corput_number(n: u32, base: u8) -> f64 {
-    let mut n = n as f64;
-    let base = base as f64;
-    
-    let mut q = 0.0;
-    let mut bk = 1.0/base as f64;
-    while n > 0.0 {
-        q += (n % base) * bk;
+fn corput_number(mut n: u32, base: u32) -> f64 {
+    let mut result = 0.0;
+    let mut denom = 1;
+    while n > 0 {
+        denom *= base;
+        result += (n % base) as f64 / denom as f64;
         n /= base;
-        bk /= base;
     }
-    return q
+    return result
 }
 
 fn halton_number(n: u32, dimension: usize) -> Vec<f64> {
     // prime numbers makes sure that all pairs are coprime
-    const BASE: [u8; 19] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67];
+    const BASE: [u32; 19] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67];
     assert!(dimension < BASE.len());
     return BASE[..dimension].iter().map(|b| corput_number(n, *b)).collect()
 }
 
-#[inline]
-fn lattice_number(n:u32, alphas: &Vec<f64>) -> Vec<f64> {
-    return alphas.iter().map(|a| (n as f64 * a).fract()).collect()
-}
-
-#[inline]
-fn lattice_alphas(dimension: usize) -> Vec<f64> {
-    (0..dimension).map(|i| (PI + i as f64).sqrt().fract()).collect()
-}
-
-pub fn low_descrepancy_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, samples: u32) -> (f64, f64) {
+pub fn low_descrepancy_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>, samples: u32, seed: u32) -> (f64, f64) {
     assert!(samples > 0);
     
     let dimension = a.len();
     let volume = std::iter::zip(&a, &b).fold(1.0, |prod, (ai, bi)| prod * (bi - ai));
     let (mut sum1, mut sum2) = (0.0, 0.0);
     
-    let alphas = lattice_alphas(dimension);
     let mut x = vec![0.0; dimension];
-    for n in 0..samples/2 {
+    for n in seed..seed+samples/2 {
         for (i, random) in halton_number(n, dimension).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
         let fx = f(&x);
         sum1 += fx;
 
-        for (i, random) in lattice_number(n, &alphas).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
+        for (i, random) in halton_number(n+samples/2, dimension).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
         let fx = f(&x);
         sum2 += fx;
     }
@@ -289,19 +275,19 @@ mod tests {
     fn test_monte_carlo_methods_1() {
         let samples = 1000 as u32;
         let expected = PI / 4.0;
-        let mut rng = Rng::new(1234);
         let f = |x: &Vec<f64>| {
-            if x.iter().fold(0.0, |sum, val| sum + val*val).sqrt() <= 1.0 {
+            if x.iter().fold(0.0, |sum, val| sum + val*val) <= 1.0 {
                 return 1.0
             } else {
                 return 0.0
             }
         };
-
+        
+        let mut rng = Rng::new(1234);
         let (int, err) = monte_carlo_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, &mut rng);
         assert!((int - expected).abs() < err);
         
-        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples);
+        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, 0);
         assert!((int - expected).abs() < err);
 
         let (int, err) = recursive_stratified_sampling(&f, vec![0.0, 0.0], vec![2.0, 2.0], samples, &mut rng);
@@ -309,11 +295,10 @@ mod tests {
         assert!((int - expected).abs() < err);
     }
 
-    /* #[test]
+    #[test]
     fn test_monte_carlo_methods_2() {
         let samples = 1e4 as u32;
         let expected = 13.0 / 20.0;
-        let mut rng = Rng::new(1234);
         let f = |x: &Vec<f64>| {
             if x[0] >= 0.0 && x[1] <= 1.0 && x[1] >= x[0]*x[0] {
                 return x[0] + x[1]
@@ -322,14 +307,15 @@ mod tests {
             }
         };
         
+        let mut rng = Rng::new(1234);
         let (int, err) = monte_carlo_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, &mut rng);
         assert!((int - expected).abs() < err);
         
-        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples);
+        let (int, err) = low_descrepancy_sampling(&f, vec![0.0, 0.0], vec![1.0, 1.0], samples, 1234);
         assert!((int - expected).abs() < err);
 
         let (int, err) = recursive_stratified_sampling(&f, vec![0.0, 0.0], vec![2.0, 2.0], samples, &mut rng);
         dbg!(&expected, &int, &err);
         assert!((int - expected).abs() < err);
-    } */
+    }
 }

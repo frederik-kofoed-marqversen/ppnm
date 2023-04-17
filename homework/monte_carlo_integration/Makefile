@@ -4,10 +4,10 @@ rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 
 run: make_libraries Out.txt Error_scaling.svg
 
-Error_scaling.svg: plot.gp scaling.data
+Error_scaling.svg: plot.gp scaling.txt
 	gnuplot $< > $@
 
-scaling.data: scaling.bin
+scaling.txt: scaling.bin
 	./$< > $@
 
 Out.txt: main.bin
