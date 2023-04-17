@@ -1,16 +1,19 @@
-MONTE CARLO INTEGRATION (using 100000 samples)
+MONTE CARLO INTEGRATION (using 10000 samples)
 
 Integral of f(x, y)=1 in the unit disc in the first quadrant.
 Analytic result: pi/4 ≈ 0.7853981633974483
-Plain Monte Carlo: 0.78048(0.005012754701359323)
-Low descrepancy: 0.78512(0.0005600000000000049)
+Plain Monte Carlo: 0.7772(0.0158)
+Low descrepancy:   0.7832(0.0024)
+Stratified:        0.7838(0.0034)
 
 Integral of f(x, y)=x+y for x>=0 above the curve y=x^2 and below y=1.
 Analytic result: 13/20 ≈ 0.65
-Plain Monte Carlo: 0.6502186676766872(0.005084562273770046)
-Low descrepancy: 0.6503211429959208(0.0003408560904777369)
+Plain Monte Carlo: 0.6294(0.0158)
+Low descrepancy:   0.6422(0.0150)
+Stratified:        0.6479(0.0045)
 
 ∫_0^π  dx/π ∫_0^π  dy/π ∫_0^π  dz/π [1-cos(x)cos(y)cos(z)]^(-1)
-Analytic result: Γ(1/4)4/(4π3) ≈ 1.3932039296856769
-Plain Monte Carlo: 1.3990734294614113(0.4594666174627348)
-Low descrepancy: 1.3930332175233167(0.8182623425137976)
+Analytic result: Γ(1/4)4/(4π3) ≈ 43.198066515915066
+Plain Monte Carlo: 43.5500(2.0332)
+Low descrepancy:   40.8845(4.2705)
+Stratified:        41.1651(0.5452)
