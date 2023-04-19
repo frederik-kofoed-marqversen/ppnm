@@ -1,5 +1,5 @@
 extern crate matrix;
-use matrix::linalg::optimisation::{quasi_newton_min};
+use matrix::linalg::optimisation::{quasi_newton_min, dowhill_simplex};
 use std::io::BufRead;
 
 fn parse_string(string_to_parse: &str, split_delimiters: Vec<char>) -> Vec<f64> {
@@ -17,17 +17,33 @@ fn main() -> std::io::Result<()> {
 
     // Rosenbrock's valley function
     println!("Rosenbrock's valley function");
+    println!("Starting point around (0, 2)");
     let f = |x: &Vec<f64>| -> f64 {(1.0 - x[0]).powi(2) + 100.0 * (x[1] - x[0]*x[0]).powi(2)};
+    println!("Quasi Newton");
     let x0 = vec![0.0, 2.0];
     let (x, fx, iter) = quasi_newton_min(&f, x0, Some((max_iter, acc))).unwrap();
-    println!("Found minimum x = [{}, {}]\nwith f(x)={fx}\nwithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("Downhill simplex");
+    let x0 = vec![0.0, 2.0];
+    let x1 = vec![0.0, 2.1];
+    let x2 = vec![0.1, 2.0];
+    let (x, fx, iter) = dowhill_simplex(&f, vec![x0, x1, x2], Some((max_iter, acc))).unwrap();
+    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
 
     // Himmelblau's function
     println!("\nHimmelblau's function");
+    println!("Starting point around (0, 0)");
     let f = |x: &Vec<f64>| -> f64 {(x[0]*x[0] + x[1] - 11.0).powi(2) + (x[0] + x[1]*x[1] - 7.0).powi(2)};
+    println!("Quasi Newton");
     let x0 = vec![0.0, 0.0];
     let (x, fx, iter) = quasi_newton_min(&f, x0, Some((max_iter, acc))).unwrap();
-    println!("Found minimum x = [{}, {}]\nwith f(x)={fx}\nwithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("Downhill simplex");
+    let x0 = vec![0.0, 0.0];
+    let x1 = vec![0.0, 0.1];
+    let x2 = vec![0.1, 0.0];
+    let (x, fx, iter) = dowhill_simplex(&f, vec![x0, x1, x2], Some((max_iter, acc))).unwrap();
+    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
 
 
     // read data from standard input stream
@@ -60,6 +76,10 @@ fn main() -> std::io::Result<()> {
     println!("\nFitted Breit-Wigner function to Higgs data");
     println!("f(E) = A * (Γ / π) / [(E-m)^2 + Γ^2/4]");
     println!("with: m={:.2}, Γ={:.2}, and A={:.2}", x[0], x[1], x[2]);
+
+    println!("\n--------------------------------------------");
+    println!("Fit function data");
+    println!("--------------------------------------------");
     
     println!("\n");
     let f = |e: f64| breit_wigner(e, &x);

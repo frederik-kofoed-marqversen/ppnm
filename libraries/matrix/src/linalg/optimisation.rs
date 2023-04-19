@@ -81,7 +81,7 @@ pub fn quasi_newton_min(f: &impl Fn(&Vec<f64>) -> f64, x0: Vec<f64>, options: Op
     while norm(df.data()) > acc {  // convergence
         iter += 1;
         if iter > max_iter {
-            return Err((x[0].to_vec(), fx, iter))
+            return Err((x[0].to_vec(), fx, max_iter))
         }
         
         // do linesearch along dx
@@ -116,6 +116,89 @@ pub fn quasi_newton_min(f: &impl Fn(&Vec<f64>) -> f64, x0: Vec<f64>, options: Op
     }
 
     return Ok((x[0].to_vec(), fx, iter))
+}
+
+pub fn dowhill_simplex(f: &impl Fn(&Vec<f64>) -> f64, mut points: Vec<Vec<f64>>, options: Option<(u32, f64)>) -> Result<(Vec<f64>, f64, u32), (Vec<f64>, f64, u32)> {
+    let (max_iter, acc) = options.unwrap_or((1000, 1e-3));
+    let (alpha, gamma, rho, sigma) = (1.0, 2.0, 0.5, 0.5);
+    
+    let dim = points[0].len();
+    assert!(points.len() == dim + 1);
+
+    let mut simplex: Vec<(f64, Matrix<f64>)> = Vec::with_capacity(dim + 1);
+    for _ in 0..dim+1 {
+        let x = Matrix::from_data(points.pop().unwrap(), dim, 1);
+        let fx = f(x.data());
+        simplex.push((fx, x));
+    };
+
+    let shrink = |simplex: &mut Vec<(f64, Matrix<f64>)>| {
+        for i in 1..dim+1 {
+            let x = &simplex[0].1 + sigma * (&simplex[i].1 - &simplex[0].1);
+            let fx = f(x.data());
+            simplex[i] = (fx, x);
+        };
+    };
+
+    let convergence = |simplex: &Vec<(f64, Matrix<f64>)>| -> bool {
+        let mut avg = 0.0;
+        for i in 0..dim+1 {
+            for j in i..dim+1 {
+                avg += norm((&simplex[i].1 - &simplex[j].1).data());
+            }
+        }
+        avg /= (dim + 1) as f64;
+        return avg < acc
+    };
+
+    for it in 0..max_iter {
+        simplex.sort_by(|a, b| (a.0).partial_cmp(&b.0).unwrap());
+        if convergence(&simplex) {
+            return Ok((simplex[0].1.data().to_vec(), simplex[0].0, it))
+        };
+
+        let centroid: Matrix<f64> = simplex[0..dim].iter().fold(Matrix::zeros(dim, 1), |sum, x| sum + &x.1) / dim as f64;
+        let reflected = &centroid + alpha * (&centroid - &simplex[dim].1);
+        let f_re = f(reflected.data());
+        
+        if simplex[0].0 <= f_re && f_re < simplex[dim-1].0 {
+            simplex[dim] = (f_re, reflected);
+            continue;
+        };
+        if f_re < simplex[0].0 {
+            let expanded = &centroid + gamma * (&reflected - &centroid);
+            let f_ex = f(expanded.data());
+            if f_ex < f_re {
+                simplex[dim] = (f_ex, expanded);
+                continue;
+            } else {
+                simplex[dim] = (f_re, reflected);
+                continue;
+            }
+        };
+        if f_re < simplex[dim].0 {
+            let contracted = &centroid + rho * (&reflected - &centroid);
+            let f_co = f(contracted.data());
+            if f_co < f_re {
+                simplex[dim] = (f_co, contracted);
+                continue
+            } else {
+                shrink(&mut simplex);
+                continue;
+            };
+        } else {
+            let contracted = &centroid + rho * (&simplex[dim].1 - &centroid);
+            let f_co = f(contracted.data());
+            if f_co < simplex[dim].0 {
+                simplex[dim] = (f_co, contracted);
+                continue
+            } else {
+                shrink(&mut simplex);
+                continue;
+            };
+        };
+    };
+    return Err((simplex[0].1.data().to_vec(), simplex[0].0, max_iter))
 }
 
 #[cfg(test)]
@@ -192,6 +275,34 @@ mod tests{
         let (x, fx, iter) = quasi_newton_min(&f, x0, Some((max_iter, acc))).unwrap();
         
         let x_min = vec![3.0, 2.0];
+        assert!(
+            (x[0] - x_min[0]).abs() < acc &&
+            (x[1] - x_min[1]).abs() < acc
+        );
+        assert!(
+            (fx - 0.0).abs() < acc
+        );
+        assert!(
+            iter < max_iter
+        );
+    }
+
+    #[test]
+    fn test_downhill_simplex() {
+        // Rosenbrock's valley function
+        let f = |x: &Vec<f64>| -> f64 {(1.0 - x[0]).powi(2) + 100.0 * (x[1] - x[0]*x[0]).powi(2)};
+        
+        let x0 = vec![2.0, 2.0];
+        let x1 = vec![2.0, 2.1];
+        let x2 = vec![2.1, 2.1];
+
+        let acc = 1e-6;
+        let max_iter = 10000;
+        let (x, fx, iter) = dowhill_simplex(&f, vec![x0, x1, x2], Some((max_iter, acc))).unwrap();
+        
+        dbg!(&x, &fx, &iter);
+
+        let x_min = vec![1.0, 1.0];
         assert!(
             (x[0] - x_min[0]).abs() < acc &&
             (x[1] - x_min[1]).abs() < acc

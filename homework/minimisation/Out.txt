@@ -1,16 +1,32 @@
 Rosenbrock's valley function
-Found minimum x = [0.9999977081422633, 0.9999932314311736]
-with f(x)=0.0000000004826133245280942
-within 43 iterations.
+Starting point around (0, 2)
+Quasi Newton
+	Found minimum x = [0.9999977081422633, 0.9999932314311736]
+	with f(x)=0.0000000004826133245280942
+	within 43 iterations.
+Downhill simplex
+	Found minimum x = [0.9984505588421597, 0.9966912715695788]
+	with f(x)=0.0000069056418207429776
+	within 29 iterations.
 
 Himmelblau's function
-Found minimum x = [3.00001744092099, 1.9999291921506115]
-with f(x)=0.00000007178692118250188
-within 7 iterations.
+Starting point around (0, 0)
+Quasi Newton
+	Found minimum x = [3.00001744092099, 1.9999291921506115]
+	with f(x)=0.00000007178692118250188
+	within 7 iterations.
+Downhill simplex
+	Found minimum x = [3.0004114020063914, 2.0013504509669593]
+	with f(x)=0.000048399576535706256
+	within 33 iterations.
 
 Fitted Breit-Wigner function to Higgs data
 f(E) = A * (Γ / π) / [(E-m)^2 + Γ^2/4]
 with: m=125.97, Γ=2.09, and A=14.87
+
+--------------------------------------------
+Fit function data
+--------------------------------------------
 
 
 100 0.014622877753717201
