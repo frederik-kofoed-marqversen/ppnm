@@ -1,7 +1,7 @@
 extern crate scientific;
 extern crate matrix;
 use std::iter::zip;
-use matrix::linalg::optimisation::newton;
+use matrix::linalg::optimisation::newton_root;
 use scientific::ode::*;
 
 fn main() {
@@ -14,12 +14,13 @@ fn main() {
         ]
     };
     let x = vec![0.0, 0.0];
-    let result = newton(&f, x, Some(1e-6));
+    let result = newton_root(&f, x, None).unwrap();
     println!("Calculated result = {result:?}");
 
 
 
     println!("\nNow solving SE for Hydrogen atom");
+    println!("True ground state energy = -0.5");
     let r_max = 8.0;
     let r_min = 0.001;
 
@@ -45,7 +46,7 @@ fn main() {
         return vec![*fs.last().unwrap()]
     };
 
-    let e0 = newton(&f_at_r_max, vec![-1.0], Some(1e-3))[0];
+    let e0 = newton_root(&f_at_r_max, vec![-1.0], Some((1000, 1e-3))).unwrap()[0];
     println!("Ground state energy = {e0}");
 
     println!("\n\nGround state f-function");

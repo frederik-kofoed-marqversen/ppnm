@@ -28,7 +28,8 @@ One of the prescribed learning outcomes of the course was to learn how to use th
 | 6 | Integration      |  6 |  3 |  1 |  10 |
 | 7 | Monte Carlo int  |  6 |  3 |  1 |  10 |
 | 8 | Root finding     |  6 |  - |  - |   6 |
-|   | Total points:    |    |    |    |  76 |
+| 9 | Minimisation     |  6 |  3 |  - |   9 |
+|   | Total points:    |    |    |    |  85 |
 
 ## License
 The contents of this repo are distributed under the the [MIT license](http://opensource.org/licenses/MIT)

@@ -1,5 +1,5 @@
 use super::Matrix;
-use std::ops::{Mul, MulAssign};
+use std::ops::{Mul, MulAssign, Div};
 
 macro_rules! matrix_multiply_scalar_right {
     ($MatrixType:ty, $T:tt) => {
@@ -41,5 +41,29 @@ impl<T: Copy + MulAssign<T>> MulAssign<T> for Matrix<T> {
         for item in self.iter_mut() {
             *item *= scalar;
         }
+    }
+}
+
+impl<T: Div<Output = T> + Copy> Div<T> for &Matrix<T> {
+    type Output = Matrix<T>;
+
+    fn div(self, scalar: T) -> Matrix<T> {
+        let mut data: Vec<T> = Vec::with_capacity(self.num_rows * self.num_cols);
+        for element in self.iter() {
+            data.push(*element / scalar);
+        }
+        return Matrix::from_data(data, self.num_rows, self.num_cols);
+    }
+}
+
+impl<T: Div<Output = T> + Copy> Div<T> for Matrix<T> {
+    type Output = Matrix<T>;
+
+    fn div(self, scalar: T) -> Matrix<T> {
+        let mut data: Vec<T> = Vec::with_capacity(self.num_rows * self.num_cols);
+        for element in self.iter() {
+            data.push(*element / scalar);
+        }
+        return Matrix::from_data(data, self.num_rows, self.num_cols);
     }
 }

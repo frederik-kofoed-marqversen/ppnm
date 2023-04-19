@@ -10,11 +10,11 @@ fn monte_carlo_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f64>,
     let (mut sum, mut sum2) = (0.0, 0.0);
     let mut x = vec![0.0; dim];
     for n in 1..=samples {
-        if n % 200 == 0 {
+        if n > 10000 && n % 1000 == 0 {
             let mean = sum / n as f64;
             let variance = sum2/n as f64 - mean*mean;
             let sigma = volume * f64::sqrt(variance / n as f64);
-            println!("{n} {sigma}");
+            println!("{n} {} {sigma}", mean * volume);
         }
 
         for i in 0..dim {x[i] = a[i] + rng.f64()*(b[i] - a[i])}
@@ -55,11 +55,11 @@ fn low_descrepancy_sampling(f: &impl Fn(&Vec<f64>) -> f64, a: Vec<f64>, b: Vec<f
     
     let mut x = vec![0.0; dimension];
     for (i, n) in (seed..seed+samples/2).enumerate() {
-        if i*2 % 200 == 0 {
+        if i*2 > 10000 && i*2 % 1000 == 0 {
             let int1 = volume * sum1 / i as f64;
             let int2 = volume * sum2 / i as f64;
             let sigma = (int1 - int2).abs();
-            println!("{} {sigma}", i*2);
+            println!("{} {} {sigma}", i*2, int1);
         }
         
         for (i, random) in halton_number(n, dimension).iter().enumerate() {x[i] = a[i] + random*(b[i] - a[i])}
@@ -84,10 +84,10 @@ fn main() {
             return 0.0
         }
     };
-    let (a, b) = (vec![0.0, 0.0], vec![2.0, 2.0]);
+    let (a, b) = (vec![0.0, 0.0], vec![1.0, 1.0]);
 
 
-    let samples = 1e4 as u32;
+    let samples = 1e5 as u32;
     // plain monte carlo
     let mut rng = scientific::rand::Rng::new(1234);
     monte_carlo_sampling(&f, a.clone(), b.clone(), samples, &mut rng);

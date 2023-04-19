@@ -1,8 +1,9 @@
 Finding minimum of f(x,y) = (1-x)^2+100(y-x^2)^2
 Expected result = [1.0, 1.0]
-Calculated result = [0.9999999999920354, 0.9999999999833682]
+Calculated result = [0.99999915151757, 0.9999982859029654]
 
 Now solving SE for Hydrogen atom
+True ground state energy = -0.5
 Ground state energy = -0.49996709892152996
 
 
