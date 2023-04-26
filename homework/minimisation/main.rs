@@ -13,22 +13,22 @@ fn parse_string(string_to_parse: &str, split_delimiters: Vec<char>) -> Vec<f64> 
 
 fn main() -> std::io::Result<()> {
     let acc = 0.01;
-    let max_iter = 10000;
+    let max_iter = 1000;
 
     // Rosenbrock's valley function
     println!("Rosenbrock's valley function");
-    println!("Starting point around (0, 2)");
+    println!("Starting point around (2, 2)");
     let f = |x: &Vec<f64>| -> f64 {(1.0 - x[0]).powi(2) + 100.0 * (x[1] - x[0]*x[0]).powi(2)};
     println!("Quasi Newton");
-    let x0 = vec![0.0, 2.0];
+    let x0 = vec![2.0, 2.0];
     let (x, fx, iter) = quasi_newton_min(&f, x0, Some((max_iter, acc))).unwrap();
-    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum [x, y] = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
     println!("Downhill simplex");
-    let x0 = vec![0.0, 2.0];
-    let x1 = vec![0.0, 2.1];
-    let x2 = vec![0.1, 2.0];
+    let x0 = vec![2.0, 2.0];
+    let x1 = vec![2.0, 2.1];
+    let x2 = vec![2.1, 2.0];
     let (x, fx, iter) = dowhill_simplex(&f, vec![x0, x1, x2], Some((max_iter, acc))).unwrap();
-    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum [x, y] = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
 
     // Himmelblau's function
     println!("\nHimmelblau's function");
@@ -37,13 +37,13 @@ fn main() -> std::io::Result<()> {
     println!("Quasi Newton");
     let x0 = vec![0.0, 0.0];
     let (x, fx, iter) = quasi_newton_min(&f, x0, Some((max_iter, acc))).unwrap();
-    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum [x, y] = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
     println!("Downhill simplex");
     let x0 = vec![0.0, 0.0];
     let x1 = vec![0.0, 0.1];
     let x2 = vec![0.1, 0.0];
     let (x, fx, iter) = dowhill_simplex(&f, vec![x0, x1, x2], Some((max_iter, acc))).unwrap();
-    println!("\tFound minimum x = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
+    println!("\tFound minimum [x, y] = [{}, {}]\n\twith f(x)={fx}\n\twithin {iter} iterations.", x[0], x[1]);
 
 
     // read data from standard input stream

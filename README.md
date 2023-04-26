@@ -18,18 +18,19 @@ One of the prescribed learning outcomes of the course was to learn how to use th
 * Estimation of the numerical accuracy of result;
 
 ## Current progress:
-| # | homework         |  A |  B |  C | sum |
-| - | ---------------- | -: | -: | -: | --: |
-| 1 | Linear Equations |  6 |  3 |  1 |  10 |
-| 2 | Eigenvalues      |  6 |  3 |  1 |  10 |
-| 3 | Least Squares    |  6 |  3 |  1 |  10 |
-| 4 | Splines          |  6 |  3 |  1 |  10 |
-| 5 | ODE              |  6 |  3 |  1 |  10 |
-| 6 | Integration      |  6 |  3 |  1 |  10 |
-| 7 | Monte Carlo int  |  6 |  3 |  1 |  10 |
-| 8 | Root finding     |  6 |  3 |  - |   9 |
-| 9 | Minimisation     |  6 |  3 |  1 |  10 |
-|   | Total points:    |    |    |    |  89 |
+|  # | homework         |  A |  B |  C | sum |
+| -- | ---------------- | -: | -: | -: | --: |
+|  1 | Linear Equations |  6 |  3 |  1 |  10 |
+|  2 | Eigenvalues      |  6 |  3 |  1 |  10 |
+|  3 | Least Squares    |  6 |  3 |  1 |  10 |
+|  4 | Splines          |  6 |  3 |  1 |  10 |
+|  5 | ODE              |  6 |  3 |  1 |  10 |
+|  6 | Integration      |  6 |  3 |  1 |  10 |
+|  7 | Monte Carlo int  |  6 |  3 |  1 |  10 |
+|  8 | Root finding     |  6 |  3 |  - |   9 |
+|  9 | Minimisation     |  6 |  3 |  1 |  10 |
+| 10 | Neural network   |  - |  - |  - |   0 |
+|    | Total points:    |    |    |    |  89 |
 
 ## License
 The contents of this repo are distributed under the the [MIT license](http://opensource.org/licenses/MIT)

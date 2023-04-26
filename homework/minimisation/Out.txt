@@ -1,22 +1,22 @@
 Rosenbrock's valley function
-Starting point around (0, 2)
+Starting point around (2, 2)
 Quasi Newton
-	Found minimum x = [0.9999977081422633, 0.9999932314311736]
-	with f(x)=0.0000000004826133245280942
-	within 43 iterations.
+	Found minimum [x, y] = [0.9989318550042257, 0.9978411036311148]
+	with f(x)=0.000001197327210296557
+	within 44 iterations.
 Downhill simplex
-	Found minimum x = [0.9984505588421597, 0.9966912715695788]
-	with f(x)=0.0000069056418207429776
-	within 29 iterations.
+	Found minimum [x, y] = [0.9993007569948008, 0.9983574470926562]
+	with f(x)=0.000006469696556894688
+	within 45 iterations.
 
 Himmelblau's function
 Starting point around (0, 0)
 Quasi Newton
-	Found minimum x = [3.00001744092099, 1.9999291921506115]
-	with f(x)=0.00000007178692118250188
-	within 7 iterations.
+	Found minimum [x, y] = [2.999981197871676, 2.0001014165992377]
+	with f(x)=0.00000014980178514603522
+	within 8 iterations.
 Downhill simplex
-	Found minimum x = [3.0004114020063914, 2.0013504509669593]
+	Found minimum [x, y] = [3.0004114020063914, 2.0013504509669593]
 	with f(x)=0.000048399576535706256
 	within 33 iterations.
 

@@ -38,6 +38,7 @@ pub fn gradient(f: &impl Fn(&Vec<f64>) -> f64, x: &Vec<f64>) -> Matrix<f64> {
 
 pub fn newton_root(f: &impl Fn(&Vec<f64>) -> Vec<f64>, x0: Vec<f64>, options: Option<(u32, f64)>) -> Result<Vec<f64>, Vec<f64>> {
     let (max_iter, acc) = options.unwrap_or((1000, 1e-3));
+    let lambda_min = 2.0_f64.powi(-13);
     let fx = f(&x0);
     let (n, m) = (fx.len(), x0.len());
     
@@ -56,7 +57,7 @@ pub fn newton_root(f: &impl Fn(&Vec<f64>) -> Vec<f64>, x0: Vec<f64>, options: Op
         back_substitution(&r, &mut dx);
         
         let mut lambda = 1.0;
-        while norm(&f((&x+lambda*&dx).data())) > (1.0-lambda/2.0)*norm_fx && lambda > 1.0/32.0 {
+        while norm(&f((&x+lambda*&dx).data())) > (1.0-lambda/2.0)*norm_fx && lambda > lambda_min {
             lambda /= 2.0;
         }
 
@@ -69,7 +70,7 @@ pub fn newton_root(f: &impl Fn(&Vec<f64>) -> Vec<f64>, x0: Vec<f64>, options: Op
 
 pub fn quasi_newton_min(f: &impl Fn(&Vec<f64>) -> f64, x0: Vec<f64>, options: Option<(u32, f64)>) -> Result<(Vec<f64>, f64, u32), (Vec<f64>, f64, u32)> {
     let (max_iter, acc) = options.unwrap_or((1000, 1e-3));
-    let lambda_min = 1.0/32.0;
+    let lambda_min = 2.0_f64.powi(-13);
 
     let dim = x0.len();
     let mut b = Matrix::idty(dim);  // inverse Hessian matrix
