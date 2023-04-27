@@ -29,8 +29,8 @@ One of the prescribed learning outcomes of the course was to learn how to use th
 |  7 | Monte Carlo int  |  6 |  3 |  1 |  10 |
 |  8 | Root finding     |  6 |  3 |  - |   9 |
 |  9 | Minimisation     |  6 |  3 |  1 |  10 |
-| 10 | Neural network   |  - |  - |  - |   0 |
-|    | Total points:    |    |    |    |  89 |
+| 10 | Neural network   |  6 |  3 |  1 |  10 |
+|    | Total points:    |    |    |    |  99 |
 
 ## License
 The contents of this repo are distributed under the the [MIT license](http://opensource.org/licenses/MIT)
