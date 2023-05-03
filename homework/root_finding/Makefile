@@ -5,10 +5,10 @@ rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 run: make_libraries Out.txt Ground_state.svg Convergence.svg
 
 Ground_state.svg: plot.gp Out.txt
-	gnuplot $< > $@
+	gnuplot plot.gp < Out.txt > $@
 
-Convergence.svg: plot_convergence.gp convergence.txt
-	gnuplot $< > $@
+Convergence.svg: convergence.txt plot_convergence.gp
+	gnuplot plot_convergence.gp < $< > $@
 
 convergence.txt: convergence.bin
 	./$< > $@

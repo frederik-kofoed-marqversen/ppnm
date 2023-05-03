@@ -38,19 +38,52 @@ fn run_convergence_calculations(r_maxs: &Vec<f64>, r_mins: &Vec<f64>, abss: &Vec
     }}
 }
 
+fn run_convergence_calculations_part_c(energy_start_guess: f64, r_maxs: &Vec<f64>, r_mins: &Vec<f64>, abss: &Vec<f64>, rels: &Vec<f64>) {
+    let max_iter = 1e3 as u32;
+    let acc = 1e-3;
+
+    for abs in abss { for rel in rels {
+        let driver = AdaptiveStepSizeDriver::new(RungeKuttaStepper::rk45(), Some((*abs, *rel)));
+        for r_max in r_maxs {for r_min in r_mins{
+            let objective = |x: &Vec<f64>| -> Vec<f64> {
+                let energy = x[0];
+                let (rs, ys) = solve_schodinger(energy, *r_max, *r_min, &driver);
+
+                let (r_end, y_end) = (rs.last().unwrap(), ys.last().unwrap());
+                let (f, df) = (y_end[0], y_end[1]);
+                let k = f64::sqrt(2.0 * energy.abs());
+                
+                return vec![df * r_end - f * (1.0 - k*r_end)];
+            };
+            let eigen_energy = match newton_root(&objective, vec![energy_start_guess], Some((max_iter, acc))) {
+                Ok(energy) => energy[0],
+                Err(energy) => energy[0],
+            };
+            println!("{eigen_energy:+.8}\t{r_max:.1}\t{r_min:.4}\t{abs:.2e}\t{rel:e}");
+        }}
+    }}
+}
+
 fn main() {
-    println!("# energy\tr_max\tr_min\tabs\trel");
-    let r_max = vec![10.0];
+    let r_max = vec![12.0];
     let r_min = vec![0.001];
     let (abs, rel) = (vec![1e-4], vec![0.0]);
 
-    let mut r_maxs = linspace(7.0, 10.0, 10);
-    r_maxs.push(10.0);
-    let mut r_mins = linspace(0.1, 0.001, 10);
+    let mut r_maxs = linspace(2.0, 12.0, 10);
+    r_maxs.push(12.0);
+    let mut r_mins = linspace(0.08, 0.001, 10);
     r_mins.push(0.001);
-    let mut exponents = linspace(-2.0, -4.0, 20);
+    let mut exponents = linspace(-2.5, -4.0, 20);
     exponents.push(-4.0);
     let abss = exponents.into_iter().map(|x| 10.0_f64.powf(x)).collect();
+
+
+
+
+    // PART B CONVERGENCE CALCULATIONS
+
+    println!("# PART B CONVERGENCE CALCULATIONS");
+    println!("# energy\tr_max\tr_min\tabs\trel");
 
     dbg!("Running r_min convergence calculations");
     run_convergence_calculations(&r_max, &r_mins, &abs, &rel);
@@ -62,5 +95,32 @@ fn main() {
 
     dbg!("Running abs convergence calculations");
     run_convergence_calculations(&r_max, &r_min, &abss, &rel);
+    println!("\n");
+
+
+
+
+
+    // PART C CONVERGENCE CALCULATIONS
+    println!("# PART C CONVERGENCE CALCULATIONS");
+    println!("# energy\tr_max\tr_min\tabs\trel");
+    
+    dbg!("Part C convergence calculations");
+    let mut r_maxs = linspace(5.0, 25.0, 15);
+    r_maxs.push(25.0);
+    
+    dbg!("Running for ground state");
+    run_convergence_calculations_part_c(-0.55, &r_maxs, &r_min, &abs, &rel);
+    println!("\n");
+
+    let mut r_maxs = linspace(5.0, 30.0, 15);
+    r_maxs.push(30.0);
+
+    dbg!("Running for 1st excited state");
+    run_convergence_calculations_part_c(-0.12, &r_maxs, &r_min, &abs, &rel);
+    println!("\n");
+
+    dbg!("Running for 2nd excited state");
+    run_convergence_calculations_part_c(-0.05, &r_maxs, &r_min, &abs, &rel);
     println!("\n");
 }
