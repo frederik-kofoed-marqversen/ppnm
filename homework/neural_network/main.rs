@@ -133,7 +133,7 @@ fn main() {
     let x0: f64 = 0.0;
     let y0: Vec<f64> = vec![1.0, 0.0];
     
-    let differential_equation = |r: f64, y: Vec<f64>| -> f64 {
+    let differential_equation = |_r: f64, y: Vec<f64>| -> f64 {
         let (f, _, ddf) = (y[0], y[1], y[2]);
         return ddf + f
     };
