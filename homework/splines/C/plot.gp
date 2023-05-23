@@ -1,4 +1,4 @@
-set terminal svg
+set terminal svg background "white"
 
 set output "Plot.svg"
 set key top right

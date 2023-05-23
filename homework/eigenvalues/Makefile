@@ -20,7 +20,8 @@ Out/test.txt: test.bin
 times.data: test.bin
 	> $@
 	$(MAKE) $(sizes:%=size-%)
-	echo "\n" >> $@
+	echo "" >> $@
+	echo "" >> $@
 	$(MAKE) $(sizes:%=size2-%)
 
 size-%: test.bin

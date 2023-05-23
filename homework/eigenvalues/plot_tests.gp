@@ -1,4 +1,4 @@
-set terminal svg
+set terminal svg background "white"
 
 set key top left
 set fit quiet

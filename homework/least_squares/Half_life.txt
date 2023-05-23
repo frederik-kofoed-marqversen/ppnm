@@ -1,0 +1,4 @@
+
+Half life (lambda/day): 4.080046419043396 in [3.91969181158357, 4.254080884806641]
+The correct val is 3.6319 which is UNFORTUNATELY NOT within the bounds.
+

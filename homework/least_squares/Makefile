@@ -6,7 +6,7 @@ Plot.svg: plot.gp out.txt
 	gnuplot $<
 
 out.txt: make_libraries main.bin
-	./main.bin
+	./main.bin > Half_life.txt
 
 main.bin: main.rs $(rlib_files)
 	rustc $< $(foreach lib,$(libraries),--extern $(lib)=$(library_path)/target/lib$(lib).rlib) -o $@

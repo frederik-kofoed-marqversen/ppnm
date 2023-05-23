@@ -1,4 +1,4 @@
-set terminal svg dynamic size 1200,900 
+set terminal svg dynamic size 1200,900 background "white"
 
 set key top right
 set ylabel "|E_{calc} - E_{true}|   [Hartree]"
