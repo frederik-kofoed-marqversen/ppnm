@@ -26,7 +26,7 @@ fn j_times(a: &mut Matrix<f64>, p: usize, q: usize, theta: f64) {
     }
 }
 
-pub fn jacobi_cyclic(a: &mut Matrix<f64>) -> Matrix<f64>{
+pub fn jacobi_cyclic(a: &mut Matrix<f64>) -> Matrix<f64> {
     // makes A diagonal -> D
     // returns transformation matrix such that A = V D V^T
     let n = a.num_cols;
@@ -102,6 +102,44 @@ pub fn jacobi_cyclic_optimised(a: &mut Matrix<f64>) -> (Vec<f64>, Matrix<f64>) {
     return (eigenvalues, v)
 }
 
+pub fn hessenberg(a: &mut Matrix<f64>) -> Matrix<f64> {
+    // puts A to upper-Hessenberg form A <- H
+    // returns transformation matrix such that A = V H V^T
+    let n = a.num_cols;
+    let mut v = Matrix::<f64>::idty(n);
+    
+    for p in 1..n-1 {
+        for q in p+1..n {
+            let theta = f64::atan2(-a.get(q, p-1), a.get(p, p-1));
+            
+            times_j(a, p, q, theta);
+            j_times(a, p, q, -theta);
+            times_j(&mut v, p, q, theta);
+        }
+    }
+
+    return v
+}
+
+
+pub fn determinant_upper_hessenberg(h: &Matrix<f64>) -> f64 {
+    let n = h.num_rows;
+    assert!(h.num_cols == n, "Matrix is not square");
+    let indices: Vec<usize> = (0..n).collect();
+    return rec_det_hessenberg(h, &indices, &indices)
+}
+
+fn rec_det_hessenberg(h: &Matrix<f64>, rows: &[usize], cols: &[usize]) -> f64 {
+    if rows.len() == 1 {
+        return h.get(rows[0], cols[0])
+    }
+    let det1 = rec_det_hessenberg(h, &rows[1..], &cols[1..]);
+    let det2 = rec_det_hessenberg(h, &[&rows[0..1], &rows[2..]].concat(), &cols[1..]);
+    let det = h.get(rows[0], cols[0]) * det1 - h.get(rows[1], cols[0]) * det2;
+    return det
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -140,5 +178,29 @@ mod tests {
             &v * v.transpose(),
             Matrix::idty(2)
         );
+    }
+
+    #[test]
+    fn test_hessenberg() {
+        let data: Vec<f64> = (1..=16).map(|n| n as f64).collect();
+        let a = Matrix::from_data(data, 4, 4).transpose();
+        let mut h = a.clone();
+        let q = hessenberg(&mut h);
+        
+        assert!(
+            h.get(2, 0).abs() + h.get(3, 0).abs() + h.get(3, 1).abs() < 1e-14
+        );
+        assert!(
+            (&a - (&q * &h * q.transpose())).iter().fold(true, |acc, item| acc && item.abs() < 1e-14)
+        );
+        assert!(determinant_upper_hessenberg(&h).abs() < 1e-13);
+    }
+
+    #[test]
+    fn test_hessenberg_determinant() {
+        assert_eq!(determinant_upper_hessenberg(&Matrix::idty(5)), 1.0);
+        
+        let mat = Matrix::from_data(vec![1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0], 3, 3);
+        assert_eq!(determinant_upper_hessenberg(&mat), 2.0);
     }
 }
