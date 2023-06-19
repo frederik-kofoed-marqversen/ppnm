@@ -2,7 +2,7 @@ libraries = scientific matrix sfuns
 library_path = ../libraries
 rlib_files = $(libraries:%=$(library_path)/target/lib%.rlib)
 
-all: Test.txt Plot.svg make_libraries
+all: make_libraries Test.txt Plot.svg
 
 Plot.svg: plot.gp times.txt
 	gnuplot $< > $@
